@@ -63,6 +63,12 @@ En Windows, existen varias consolas o terminales que puedes utilizar para ejecut
 > **Nota**: Puedes acceder a estas consolas a través del menú inicio de Windows o mediante la búsqueda de Windows, escribiendo el nombre de la consola que deseas utilizar.
 
 ## Registro de cambios.
+###Versión 1.1.
+
+* Corrección de errores en cadenas traducibles.
+
+* Agregado idioma inglés con traducción automática.
+
 ###Versión 1.0.
 
 * Versión inicial.

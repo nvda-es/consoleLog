@@ -276,7 +276,7 @@ class VerLog(wx.Frame):
 
 	def onSaveAsCommand(self, evt):
 		# TRANSLATORS: Nombre para el dialogo de guardar archivo
-		filename = wx.FileSelector(_("Save As"), default_filename="", flags=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT, parent=self)
+		filename = wx.FileSelector(_("Guardar como..."), default_filename="", flags=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT, parent=self)
 		if not filename:
 			return
 		try:
@@ -284,7 +284,7 @@ class VerLog(wx.Frame):
 				f.write(self.outputCtrl.GetValue())
 		except (IOError, OSError) as e:
 			# TRANSLATORS: Mensaje de error
-			gui.messageBox(_("Error saving log: %s") % e.strerror, _("Error"), style=wx.OK | wx.ICON_ERROR, parent=self)
+			gui.messageBox(_("Error guardando log: %s") % e.strerror, _("Error"), style=wx.OK | wx.ICON_ERROR, parent=self)
 
 	def onOutputKeyDown(self, evt):
 		key = evt.GetKeyCode()
