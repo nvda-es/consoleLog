@@ -1,0 +1,3 @@
+* Versión inicial.
+
+SHA256: 
