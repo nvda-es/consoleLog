@@ -27,7 +27,7 @@ addon_info = {
 
 Asignar tecla en Gestos de entrada / Visor de consola."""),
 	# version
-	"addon_version": "1.0",
+	"addon_version": "1.2",
 	# Author(s)
 	"addon_author": u"Héctor J. Benítez Corredera <xebolax@gmail.com>",
 	# URL for the add-on documentation support

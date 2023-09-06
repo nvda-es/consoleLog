@@ -59,7 +59,7 @@ def leer_consola(data_queue):
 				# Encuentra la ventana de consola con el título obtenido
 		hConWnd = ctypes.windll.user32.FindWindowW(None, buffer.value)
 		if hConWnd == 0:
-    # TRANSLATORS: Mensaje de error 
+			# TRANSLATORS: Mensaje de error 
 			data_queue.put(_("No se pudo encontrar la ventana de la consola."))
 			return
 
@@ -68,8 +68,9 @@ def leer_consola(data_queue):
 		ctypes.windll.user32.GetWindowThreadProcessId(hConWnd, ctypes.byref(process_id))
 
 		# Adjunta nuestra consola al proceso de esa ventana
+		ctypes.windll.kernel32.FreeConsole()
 		if not ctypes.windll.kernel32.AttachConsole(process_id.value):
-    # TRANSLATORS: Mensaje de error
+			# TRANSLATORS: Mensaje de error
 			data_queue.put(_("No se pudo adjuntar a la consola del proceso."))
 			return
 
@@ -77,7 +78,7 @@ def leer_consola(data_queue):
 		hConsole = ctypes.windll.kernel32.GetStdHandle(STD_OUTPUT_HANDLE)
 		if hConsole == -1:
 			ctypes.windll.kernel32.FreeConsole()
-    # TRANSLATORS: Mensaje de error
+			# TRANSLATORS: Mensaje de error
 			data_queue.put(_("No se pudo obtener el manejador de la consola."))
 			return
 
@@ -109,7 +110,7 @@ def leer_consola(data_queue):
 		# Retorna el texto extraído
 		data_queue.put(text)
 	except Exception as e:
-    # TRANSLATORS: Mensaje de error
+		# TRANSLATORS: Mensaje de error
 		data_queue.put(_("Error: {}").format(e))
 
 def disableInSecureMode(decoratedCls):
@@ -168,9 +169,18 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		leer_consola.stop_signal = True
 		self.proceso_en_marcha = False
 
-		# TRANSLATORS: Partes de texto a detectar
-		if texto.startswith(_("No se pudo obtener")) or texto.startswith(_("Error:")):
+		try:
+			#TRANSLATORS: Partes de texto a detectar
+			if re.match("|".join([re.escape(_("No se pudo obtener")), re.escape(_("Error:"))]), texto):
+				ui.message(texto)
+				return
+		except:
 			ui.message(texto)
+			return
+
+		if not texto:
+			# TRANSLATORS: Mensaje informativo
+			ui.message(_("No se encontró texto en la consola"))
 			return
 
 		try:

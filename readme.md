@@ -63,6 +63,14 @@ En Windows, existen varias consolas o terminales que puedes utilizar para ejecut
 > **Nota**: Puedes acceder a estas consolas a través del menú inicio de Windows o mediante la búsqueda de Windows, escribiendo el nombre de la consola que deseas utilizar.
 
 ## Registro de cambios.
+###Versión 1.2.
+
+* Solucionado error critico en Windows 10 de denegación de permisos (código 5).
+
+* Agregado idioma turco y documentación (Umut KORKMAZ).
+
+* Agregado detección de consola sin texto.
+
 ###Versión 1.1.
 
 * Corrección de errores en cadenas traducibles.
