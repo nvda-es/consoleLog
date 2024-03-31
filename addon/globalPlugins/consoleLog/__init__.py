@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2023 Héctor J. Benítez Corredera <xebolax@gmail.com>
+# Copyright (C) 2024 Héctor J. Benítez Corredera <xebolax@gmail.com>
 # This file is covered by the GNU General Public License.
 
 import globalPluginHandler
@@ -8,7 +8,7 @@ import api
 import ui
 import globalVars
 import gui
-import gui.contextHelp
+import UIAHandler
 from scriptHandler import script
 import ctypes
 import wx
@@ -113,6 +113,32 @@ def leer_consola(data_queue):
 		# TRANSLATORS: Mensaje de error
 		data_queue.put(_("Error: {}").format(e))
 
+def leer_consola_wt(data_queue):
+	try:
+		# Lógica para emitir un beep suave mientras el hilo está en funcionamiento, en otro hilo
+		def beep_suave():
+			while not leer_consola_wt.stop_signal:
+				winsound.Beep(1000, 100)
+				wx.MilliSleep(1000)
+        
+		beep_thread = threading.Thread(target=beep_suave, daemon=True)
+		beep_thread.start()
+			
+		# Aquí comienza la lógica para obtener el texto de la consola
+		UIAHandler.initialize()
+		focused_element = UIAHandler.handler.clientObject.getFocusedElement()
+		pattern = focused_element.getCurrentPattern(UIAHandler.UIA_TextPatternId)
+		text_pattern = pattern.QueryInterface(UIAHandler.IUIAutomationTextPattern)
+		text_range = text_pattern.documentRange
+		texto_terminal = text_range.getText(-1)
+		text = '\n'.join(line.rstrip() for line in texto_terminal.splitlines() if line.strip())
+		data_queue.put(text)
+	except Exception as e:
+		# TRANSLATORS: Mensaje de error
+		data_queue.put(_("Error: {}").format(e))
+	finally:
+		UIAHandler.terminate()
+
 def disableInSecureMode(decoratedCls):
 	if globalVars.appArgs.secure:
 		return globalPluginHandler.GlobalPlugin
@@ -126,6 +152,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self.proceso_en_marcha = False
 		self.dialogo_abierto = False
 		self.fichero_temporal = os.path.join(tempfile.gettempdir(),"consoleLog_temp.txt")
+		self.foreground_window = None
 
 	@script(gesture=None,
 		# TRANSLATORS: Descripción para el dialogo de gestos
@@ -144,8 +171,11 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			ui.message(_("Por favor, cierre el diálogo actual antes de iniciar uno nuevo."))
 			return
 		
-		foreground_window = api.getForegroundObject()
-		if not foreground_window.windowClassName.startswith("ConsoleWindowClass"):
+		self.foreground_window = api.getForegroundObject()
+		if not (
+			self.foreground_window.windowClassName.startswith("ConsoleWindowClass")
+			or self.foreground_window.windowClassName == "CASCADIA_HOSTING_WINDOW_CLASS"
+		):
 			# TRANSLATORS: Mensaje informativo
 			ui.message(_("Esta no es una ventana de consola."))
 			return
@@ -153,9 +183,14 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self.proceso_en_marcha = True
 
 		data_queue = queue.Queue()
-		leer_consola.stop_signal = False
-		thread = threading.Thread(target=leer_consola, args=(data_queue,), daemon=True)
-		thread.start()
+		if self.foreground_window.appModule.productName in ['Microsoft.WindowsTerminal']:
+			leer_consola_wt.stop_signal = False
+			thread = threading.Thread(target=leer_consola_wt, args=(data_queue,), daemon=True)
+			thread.start()
+		else:
+			leer_consola.stop_signal = False
+			thread = threading.Thread(target=leer_consola, args=(data_queue,), daemon=True)
+			thread.start()
 
 		wx.CallLater(100, self.mostrar_dialogo, data_queue)
 
@@ -166,7 +201,11 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			wx.CallLater(100, self.mostrar_dialogo, data_queue)
 			return
 
-		leer_consola.stop_signal = True
+		if self.foreground_window.appModule.productName in ['Microsoft.WindowsTerminal']:
+			leer_consola_wt.stop_signal = True
+		else:
+			leer_consola.stop_signal = True
+
 		self.proceso_en_marcha = False
 
 		try:

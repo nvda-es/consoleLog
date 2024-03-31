@@ -3,4 +3,4 @@
 scons --clean
 scons pot
 scons
-consoleLog-1.1.nvda-addon
+consoleLog-1.3.nvda-addon

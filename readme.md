@@ -63,6 +63,18 @@ En Windows, existen varias consolas o terminales que puedes utilizar para ejecut
 > **Nota**: Puedes acceder a estas consolas a través del menú inicio de Windows o mediante la búsqueda de Windows, escribiendo el nombre de la consola que deseas utilizar.
 
 ## Registro de cambios.
+###Versión 1.3.
+
+* Agregada compatibilidad con Windows Terminal.
+
+Esta función esta de prueba.
+
+De momento en las pruebas realizadas extrae correctamente el texto y lo muestra para poder ser visualizado cómodamente en un dialogo y poder trabajar con él.
+
+Esta nueva función se agrega al visor de consolas cmd, powershell y bash usando su misma combinación de teclas que tengamos agregado al complemento.
+
+Al pulsar dicha combinación detectara que clase de consola tenemos enfocada y actuara en consecuencia.
+
 ###Versión 1.2.
 
 * Solucionado error critico en Windows 10 de denegación de permisos (código 5).
