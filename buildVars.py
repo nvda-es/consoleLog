@@ -32,6 +32,8 @@ Asignar tecla en Gestos de entrada / Visor de consola."""),
 	"addon_author": u"Héctor J. Benítez Corredera <xebolax@gmail.com>",
 	# URL for the add-on documentation support
 	"addon_url": "https://github.com/nvda-es/consoleLog",
+	# URL for the add-on repository where the source code can be found
+	"addon_sourceURL": "https://github.com/nvda-es/consoleLog",
 	# Documentation file name
 	"addon_docFileName": "readme.html",
 	# Minimum NVDA version supported (e.g. "2018.3.0", minor version is optional)
@@ -42,9 +44,11 @@ Asignar tecla en Gestos de entrada / Visor de consola."""),
 	# and for development releases, use "dev".)
 	# Do not change unless you know what you are doing!
 	"addon_updateChannel": None,
+	# Add-on license such as GPL 2
+	"addon_license": "GPL v2",
+	# URL for the license document the ad-on is licensed under
+	"addon_licenseURL": "https://www.gnu.org/licenses/gpl-2.0.html",
 }
-
-import os.path
 
 # Define the python files that are the sources of your add-on.
 # You can either list every file (using ""/") as a path separator,
@@ -54,10 +58,10 @@ import os.path
 # pythonSources = ["addon/globalPlugins/*.py"]
 # For more information on SCons Glob expressions please take a look at:
 # https://scons.org/doc/production/HTML/scons-user/apd.html
-pythonSources = [os.path.join("addon", "globalPlugins", "consoleLog", "*.py")]
+pythonSources = ["addon/globalPlugins/consoleLog/__init__.py"]
 
 # Files that contain strings for translation. Usually your python sources
-i18nSources = ["buildVars.py"] + pythonSources
+i18nSources = pythonSources + ["buildVars.py"]
 
 # Files that will be ignored when building the nvda-addon file
 # Paths are relative to the addon directory, not to the root directory of your addon sources.
@@ -67,3 +71,10 @@ excludedFiles = []
 # If the source code, add-on interface and readme file located in the root folder are written in a language other than english, modify this variable as appropriate.
 # For example, set baseLanguage to "es" if your add-on is primarily in spanish
 baseLanguage = "es"
+
+# Markdown extensions for add-on documentation
+# Most add-ons do not require additional Markdown extensions.
+# If you need to add support for markup such as tables, fill out the below list.
+# Extensions string must be of the form "markdown.extensions.extensionName"
+# e.g. "markdown.extensions.tables" to add tables.
+markdownExtensions = []

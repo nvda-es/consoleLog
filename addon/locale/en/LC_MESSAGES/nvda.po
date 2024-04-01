@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 'consoleLog' '1.0'\n"
 "Report-Msgid-Bugs-To: 'nvda-translations@groups.io'\n"
 "POT-Creation-Date: 2023-09-05 21:43+0200\n"
-"PO-Revision-Date: 2023-09-05 23:43+0200\n"
+"PO-Revision-Date: 2024-04-01 11:31+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.3.1\n"
+"X-Generator: Poedit 3.4.2\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
 #. Add-on summary, usually the user visible name of the addon.
@@ -36,9 +36,9 @@ msgid ""
 "\n"
 "Asignar tecla en Gestos de entrada / Visor de consola."
 msgstr ""
-"Small plugin to display the content of Windows consoles in a dialog\n"
+"Small add-on to display in a dialog the content of Windows consoles\n"
 "\n"
-"Assign key in Input Gestures / Console Viewer."
+"Assign key in Input gestures / Console Viewer."
 
 #. TRANSLATORS: Mensaje de error
 #: addon\globalPlugins\consoleLog\__init__.py:63
@@ -70,7 +70,7 @@ msgstr "Show the console viewer"
 #: addon\globalPlugins\consoleLog\__init__.py:133
 #: addon\globalPlugins\consoleLog\__init__.py:195
 msgid "Visor de consola"
-msgstr "console viewer"
+msgstr "Console viewer"
 
 #. TRANSLATORS: Mensaje informativo
 #: addon\globalPlugins\consoleLog\__init__.py:138
