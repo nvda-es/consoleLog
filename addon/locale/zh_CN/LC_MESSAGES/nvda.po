@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 'consoleLog' '1.0'\n"
 "Report-Msgid-Bugs-To: 'nvda-translations@groups.io'\n"
-"POT-Creation-Date: 2023-09-05 21:43+0200\n"
-"PO-Revision-Date: 2025-01-11 16:34+0800\n"
+"POT-Creation-Date: 2025-03-02 12:47+0800\n"
+"PO-Revision-Date: 2025-03-02 13:25+0800\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: zh_CN\n"
@@ -19,165 +19,268 @@ msgstr ""
 "X-Generator: Poedit 3.5\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
-#. Add-on summary, usually the user visible name of the addon.
-#. Translators: Summary for this add-on
-#. to be shown on installation and add-on information found in Add-ons
-#. Manager.
-#: buildVars.py:23
-msgid "Visor para las consolas de Windows"
-msgstr "Windows控制台查看器"
-
-#. Add-on description
-#. Translators: Long description to be shown for this add-on on add-on
-#. information from add-ons manager
-#: buildVars.py:26
-msgid ""
-"Pequeño complemento para mostrar en un dialogo el contenido de las consolas "
-"de Windows\n"
-"\n"
-"Asignar tecla en Gestos de entrada / Visor de consola."
-msgstr ""
-"在对话框中显示Windows控制台内容的插件。\n"
-"在按键于手势对话框中为控制台查看器分配热键。"
-
 #. TRANSLATORS: Mensaje de error
-#: addon\globalPlugins\consoleLog\__init__.py:63
+#: addon\globalPlugins\consoleLog\__init__.py:81
+#: addon\globalPlugins\consoleLog\__init__.py:178
 msgid "No se pudo encontrar la ventana de la consola."
 msgstr "找不到控制台窗口。"
 
 #. TRANSLATORS: Mensaje de error
-#: addon\globalPlugins\consoleLog\__init__.py:73
+#: addon\globalPlugins\consoleLog\__init__.py:92
 msgid "No se pudo adjuntar a la consola del proceso."
 msgstr "找不到控制台进程。"
 
 #. TRANSLATORS: Mensaje de error
-#: addon\globalPlugins\consoleLog\__init__.py:81
+#: addon\globalPlugins\consoleLog\__init__.py:100
 msgid "No se pudo obtener el manejador de la consola."
 msgstr "找不到控制台处理程序。"
 
 #. TRANSLATORS: Mensaje de error
-#: addon\globalPlugins\consoleLog\__init__.py:113
+#: addon\globalPlugins\consoleLog\__init__.py:132
+#: addon\globalPlugins\consoleLog\__init__.py:162
 msgid "Error: {}"
 msgstr "错误： {}"
 
+#: addon\globalPlugins\consoleLog\__init__.py:184
+#, fuzzy
+#| msgid "No se pudo encontrar la ventana de la consola."
+msgid "No se pudieron obtener las coordenadas de la ventana de la consola."
+msgstr "找不到控制台窗口。"
+
+#: addon\globalPlugins\consoleLog\__init__.py:238
+msgid "La ventana enfocada no es una consola."
+msgstr "当前窗口非控制台。"
+
+#: addon\globalPlugins\consoleLog\__init__.py:240
+msgid "Error al intentar realizar el clic derecho: {}"
+msgstr "控制台窗口右击时发生了错误{}"
+
 #. TRANSLATORS: Descripción para el dialogo de gestos
-#: addon\globalPlugins\consoleLog\__init__.py:131
+#: addon\globalPlugins\consoleLog\__init__.py:271
 msgid "Muestra el visor de consola"
 msgstr "显示控制台查看器"
 
 #. TRANSLATORS: Nombre de la categoría en el dialogo de gestos
 #. TRANSLATORS: Titulo de la ventana del visor de consola
-#: addon\globalPlugins\consoleLog\__init__.py:133
-#: addon\globalPlugins\consoleLog\__init__.py:195
+#: addon\globalPlugins\consoleLog\__init__.py:273
+#: addon\globalPlugins\consoleLog\__init__.py:372
+#: addon\globalPlugins\consoleLog\__init__.py:585
+#: addon\globalPlugins\consoleLog\__init__.py:617
 msgid "Visor de consola"
 msgstr "控制台查看器"
 
 #. TRANSLATORS: Mensaje informativo
-#: addon\globalPlugins\consoleLog\__init__.py:138
+#: addon\globalPlugins\consoleLog\__init__.py:284
 msgid "Por favor, espere. Hay otro proceso en marcha."
 msgstr "请稍等，另一个进程正在运行。"
 
 #. TRANSLATORS: Mensaje informativo
-#: addon\globalPlugins\consoleLog\__init__.py:143
+#: addon\globalPlugins\consoleLog\__init__.py:289
 msgid "Por favor, cierre el diálogo actual antes de iniciar uno nuevo."
 msgstr "再打开新窗口前请先关闭当前窗口。"
 
 #. TRANSLATORS: Mensaje informativo
-#: addon\globalPlugins\consoleLog\__init__.py:149
+#: addon\globalPlugins\consoleLog\__init__.py:298
 msgid "Esta no es una ventana de consola."
 msgstr "这不是控制台程序窗口。"
 
 #. TRANSLATORS: Partes de texto a detectar
-#: addon\globalPlugins\consoleLog\__init__.py:172
+#: addon\globalPlugins\consoleLog\__init__.py:337
 msgid "No se pudo obtener"
 msgstr "无结果"
 
-#: addon\globalPlugins\consoleLog\__init__.py:172
+#: addon\globalPlugins\consoleLog\__init__.py:337
 msgid "Error:"
 msgstr "错误："
 
+#. TRANSLATORS: Mensaje informativo
+#: addon\globalPlugins\consoleLog\__init__.py:346
+msgid "No se encontró texto en la consola"
+msgstr "找不到控制台中的文本"
+
 #. TRANSLATORS: Mensaje de error
-#: addon\globalPlugins\consoleLog\__init__.py:181
+#: addon\globalPlugins\consoleLog\__init__.py:354
 msgid "Se ha producido un error: {} (tipo de error: {})"
 msgstr "发生错误： {} (类型： {})"
 
+#. TRANSLATORS: Descripción para el dialogo de gestos
+#: addon\globalPlugins\consoleLog\__init__.py:370
+msgid ""
+"Realiza un clic derecho en la ventana de consola enfocada para copiar el "
+"contenido del portapapeles."
+msgstr "右击控制台窗口粘贴剪贴板内的文字。"
+
+#: addon\globalPlugins\consoleLog\__init__.py:575
+msgid "Tipo de terminal no soportado."
+msgstr "不支持的终端。"
+
+#. TRANSLATORS: Descripción para el dialogo de gestos
+#: addon\globalPlugins\consoleLog\__init__.py:583
+msgid "Abrir el lanzador de consolas de Windows."
+msgstr "打开windows控制台启动器。"
+
+#: addon\globalPlugins\consoleLog\__init__.py:604
+#, fuzzy
+#| msgid "No se encontró texto en la consola"
+msgid "No se encontró una selección válida."
+msgstr "找不到控制台中的文本"
+
+#: addon\globalPlugins\consoleLog\__init__.py:612
+msgid "Ya hay una instancia de lanzador de consolas abierta."
+msgstr "已经有打开的控制台启动器窗口。"
+
 #. TRANSLATORS: Item de menú en el dialogo de visor de consola
-#: addon\globalPlugins\consoleLog\__init__.py:214
+#: addon\globalPlugins\consoleLog\__init__.py:636
 msgid "&Buscar\tCtrl+F"
 msgstr "&查找\tCtrl+F"
 
 #. TRANSLATORS: Item de menú en el dialogo de visor de consola
-#: addon\globalPlugins\consoleLog\__init__.py:217
+#: addon\globalPlugins\consoleLog\__init__.py:639
 msgid "&Guardar como...\tCtrl+S"
 msgstr "&另存为\tCtrl+S"
 
 #. TRANSLATORS: Item de menú en el dialogo de visor de consola
-#: addon\globalPlugins\consoleLog\__init__.py:221
+#: addon\globalPlugins\consoleLog\__init__.py:643
 msgid "&Salir"
 msgstr "&退出"
 
 #. TRANSLATORS: Nombre del menú en el dialogo de visor de consola
-#: addon\globalPlugins\consoleLog\__init__.py:224
+#: addon\globalPlugins\consoleLog\__init__.py:646
 msgid "&Registro"
 msgstr "&菜单"
 
 #. TRANSLATORS: Mensaje de error
-#: addon\globalPlugins\consoleLog\__init__.py:269
+#: addon\globalPlugins\consoleLog\__init__.py:701
 msgid "No hay coincidencias encontradas."
 msgstr "找不到匹配项。"
 
 #. TRANSLATORS: Titulo del mensaje de error
-#: addon\globalPlugins\consoleLog\__init__.py:271
+#: addon\globalPlugins\consoleLog\__init__.py:703
 msgid "Busqueda"
 msgstr "查找"
 
 #. TRANSLATORS: Nombre para el dialogo de guardar archivo
-#: addon\globalPlugins\consoleLog\__init__.py:279
+#: addon\globalPlugins\consoleLog\__init__.py:723
 msgid "Guardar como..."
-msgstr "另存为"
+msgstr "另存为..."
 
 #. TRANSLATORS: Mensaje de error
-#: addon\globalPlugins\consoleLog\__init__.py:287
+#: addon\globalPlugins\consoleLog\__init__.py:731
 #, python-format
 msgid "Error guardando log: %s"
 msgstr "日志保存错误： %s"
 
-#: addon\globalPlugins\consoleLog\__init__.py:287
+#: addon\globalPlugins\consoleLog\__init__.py:731
 msgid "Error"
 msgstr "错误"
 
 #. Muestra la información con un mensaje
 #. TRANSLATORS: Mensaje de información de la línea y posición
-#: addon\globalPlugins\consoleLog\__init__.py:302
+#: addon\globalPlugins\consoleLog\__init__.py:752
 msgid "Línea: {}, Posición: {}"
 msgstr "行： {},列： {}"
 
 #. TRANSLATORS: Mensaje de error al borrar el fichero temporal
-#: addon\globalPlugins\consoleLog\__init__.py:318
+#: addon\globalPlugins\consoleLog\__init__.py:777
 msgid "El archivo temporal no fue encontrado"
 msgstr "找不到临时文件"
 
 #. TRANSLATORS: Mensaje de error al borrar el fichero temporal
-#: addon\globalPlugins\consoleLog\__init__.py:321
+#: addon\globalPlugins\consoleLog\__init__.py:780
 msgid "Permiso denegado para eliminar el archivo temporal"
 msgstr "没有删除临时文件的权限"
 
 #. TRANSLATORS: Mensaje de error al borrar el fichero temporal
-#: addon\globalPlugins\consoleLog\__init__.py:324
+#: addon\globalPlugins\consoleLog\__init__.py:783
 msgid "Ocurrió un error al intentar eliminar el archivo temporal: {}"
 msgstr "删除临时文件时发生了错误{}"
 
 #. TRANSLATORS: Titulo del dialogo buscar
-#: addon\globalPlugins\consoleLog\__init__.py:331
+#: addon\globalPlugins\consoleLog\__init__.py:790
 msgid "Buscar"
 msgstr "查找"
 
 #. TRANSLATORS: Nombre del botón buscar en el dialogo buscar
-#: addon\globalPlugins\consoleLog\__init__.py:341
+#: addon\globalPlugins\consoleLog\__init__.py:800
 msgid "&Buscar"
 msgstr "&查找"
 
-#. TRANSLATORS: Mensaje informativo
-#: addon\globalPlugins\consoleLog\__init__.py:183
-msgid "No se encontró texto en la consola"
-msgstr "找不到控制台中的文本"
+#: addon\globalPlugins\consoleLog\__init__.py:829
+msgid "Lanzador de consolas"
+msgstr "控制台启动器"
+
+#: addon\globalPlugins\consoleLog\__init__.py:840
+msgid "Abrir CMD aquí"
+msgstr "打开cmd"
+
+#: addon\globalPlugins\consoleLog\__init__.py:841
+msgid "Abrir CMD como Administrador"
+msgstr "打开cmd，管理员"
+
+#: addon\globalPlugins\consoleLog\__init__.py:842
+msgid "Abrir PowerShell aquí"
+msgstr "打开PowerShell"
+
+#: addon\globalPlugins\consoleLog\__init__.py:843
+msgid "Abrir PowerShell como Administrador"
+msgstr "打开PowerShell，管理员"
+
+#: addon\globalPlugins\consoleLog\__init__.py:844
+msgid "Abrir Windows Terminal aquí"
+msgstr "打开Windows终端"
+
+#: addon\globalPlugins\consoleLog\__init__.py:845
+msgid "Abrir Windows Terminal como Administrador"
+msgstr "打开Windows终端，管理员"
+
+#: addon\globalPlugins\consoleLog\__init__.py:846
+msgid "Abrir git-bash aquí"
+msgstr "打开git-bash"
+
+#: addon\globalPlugins\consoleLog\__init__.py:847
+msgid "Abrir git-bash como Administrador"
+msgstr "打开git-bash，管理员"
+
+#: addon\globalPlugins\consoleLog\__init__.py:848
+msgid "Abrir consola de Visual Studio (32-bit)"
+msgstr "打开Visual Studio控制台 (32-位)"
+
+#: addon\globalPlugins\consoleLog\__init__.py:849
+msgid "Abrir consola de Visual Studio (32-bit) como Administrador"
+msgstr "打开Visual Studio控制台 (32-位)，管理员"
+
+#: addon\globalPlugins\consoleLog\__init__.py:850
+msgid "Abrir consola de Visual Studio (64-bit)"
+msgstr "打开Visual Studio控制台 (64-位)"
+
+#: addon\globalPlugins\consoleLog\__init__.py:851
+msgid "Abrir consola de Visual Studio (64-bit) como Administrador"
+msgstr "打开Visual Studio控制台 (64-位)，管理员"
+
+#. Add-on summary, usually the user visible name of the addon.
+#. Translators: Summary for this add-on
+#. to be shown on installation and add-on information found in Add-ons Manager.
+#: buildVars.py:23
+msgid "Visor para las consolas de Windows"
+msgstr "Windows控制台查看器"
+
+#. Add-on description
+#. Translators: Long description to be shown for this add-on on add-on information from add-ons manager
+#: buildVars.py:26
+#, fuzzy
+#| msgid ""
+#| "Pequeño complemento para mostrar en un dialogo el contenido de las "
+#| "consolas de Windows\n"
+#| "\n"
+#| "Asignar tecla en Gestos de entrada / Visor de consola."
+msgid ""
+"* Pequeño complemento para mostrar en un dialogo el contenido de las "
+"consolas de Windows\n"
+"* Lanzador de consolas CMD, PowerShell, Terminal, Bash, Visual Studio "
+"developer.\n"
+"* Copiado del portapapeles en consola enfocada de manera fácil.\n"
+"\n"
+"Asignar teclas en Gestos de entrada / Visor de consola."
+msgstr ""
+"在对话框中显示Windows控制台内容的插件。\n"
+"在按键于手势对话框中为控制台查看器分配热键。"
