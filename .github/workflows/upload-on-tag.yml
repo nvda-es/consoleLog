@@ -56,8 +56,8 @@ jobs:
         id: submit_addon
         uses: beqabeqa473/submitNVDAAddon@v1
         with:
-          addon_name: "AMRadio"
+          addon_name: "consoleLog"
           addon_version: "${{ github.ref_name }}"  # Usa el nombre del tag como versión
-          download_url: "https://github.com/jpavonabian/AMRadio-Addon/releases/download/${{ github.ref_name }}/AMRadio-${{ github.ref_name }}.nvda-addon"
+          download_url: "https://github.com/nvda-es/consoleLog/releases/download/${{ github.ref_name }}/consoleLog-${{ github.ref_name }}.nvda-addon"
           token: ${{ secrets.USER_TOKEN }}
           

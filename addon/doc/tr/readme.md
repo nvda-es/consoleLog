@@ -63,9 +63,41 @@ Windows'ta komutları ve komut dosyalarını çalıştırmak için kullanabilece
 > **Not**: Bu konsollara Windows başlat menüsünden ya da kullanmak istediğiniz konsolun adını yazarak Windows arama yoluyla ulaşabilirsiniz.
 
 ## Sürüm Geçmişi:
-### Sürüm 1.2.
+### Sürüm 1.4:
 
-* Türkçe dil desteği eklendi. (Umut KORKMAZ)
+**Yenilikler:**:
+
+Girdi hareketlerinde ilgili kategorideki tuşları atayın.
+
+1. **Konsollara sağ tıklayın**:
+   - Artık pano içeriğini konsolda otomatik olarak yapıştırmak için klasik veya modern konsollara sağ tıklayabilirsiniz.
+   - Bu işlev, ek kombinasyonlara ihtiyaç duymadan metni konsol ortamına hızlı bir şekilde aktarmak için yararlıdır.
+
+2. **Konsol başlatıcısı**:
+   - Sistemde herhangi bir dizinden kurulan farklı konsolları açmanıza olanak tanıyan yeni bir işlev eklendi.
+   - Mevcut konsolları otomatik olarak algılar: CMD, PowerShell, Windows Terminali, Git-Bash ve Visual Studio konsolları.
+   - Normal modda veya yönetici ayrıcalıklarıyla konsolları açma seçenekleri içerir.
+   - Ok tuşlarıyla istenen konsolu kolayca seçmeye ve ** `Başlatıcı` ** ile açmaya izin verir.
+
+### Sürüm 1.3:
+
+* Windows Terminali ile tam uyumluluk.
+
+Bu özellik test aşamasındadır.
+
+Şu anda yapılan testlerde metni doğru bir şekilde ayıklıyor ve bir diyalogda rahatça görselleştirilebilmesi ve onunla çalışabilmesi için görüntülüyor.
+
+Bu yeni işlev, eklentiye eklediğimiz aynı tuş kombinasyonu kullanılarak cmd, powershell ve bash konsol görüntüleyicisine eklenir.
+
+Bu kombinasyona bastığınızda ne tür bir konsola odaklandığınızı algılayacak ve buna göre hareket edecektir.
+
+### Sürüm 1.2:
+
+* Windows 10'da izin reddi ile ilgili kritik hata düzeltildi (kod 5).
+
+* Türkçe dil desteği ve belgeleri eklendi (Umut KORKMAZ).
+
+* Metinsiz konsol algılama özelliği eklendi.
 
 ### Sürüm 1.1.
 
