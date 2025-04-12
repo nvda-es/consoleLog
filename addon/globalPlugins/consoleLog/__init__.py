@@ -149,7 +149,7 @@ def leer_consola_wt(data_queue):
 		beep_thread.start()
 			
 		# Aquí comienza la lógica para obtener el texto de la consola
-#		UIAHandler.initialize()
+		UIAHandler.initialize()
 		focused_element = UIAHandler.handler.clientObject.getFocusedElement()
 		pattern = focused_element.getCurrentPattern(UIAHandler.UIA_TextPatternId)
 		text_pattern = pattern.QueryInterface(UIAHandler.IUIAutomationTextPattern)
@@ -161,7 +161,7 @@ def leer_consola_wt(data_queue):
 		# TRANSLATORS: Mensaje de error
 		data_queue.put(_("Error: {}").format(e))
 	finally:
-		pass #UIAHandler.terminate()
+		UIAHandler.terminate()
 
 # Función para realizar un clic derecho en Windows Terminal
 def realizar_clic_derecho_terminal_moderno():
@@ -172,7 +172,7 @@ def realizar_clic_derecho_terminal_moderno():
 		Simula un clic derecho utilizando la API de UI Automation para obtener las coordenadas de la consola.
 	"""
 	try:
-		#UIAHandler.initialize()
+		UIAHandler.initialize()
 		focused_element = UIAHandler.handler.clientObject.getFocusedElement()
 		if not focused_element:
 			ui.message(_("No se pudo encontrar la ventana de la consola."))
@@ -198,9 +198,10 @@ def realizar_clic_derecho_terminal_moderno():
 		ctypes.windll.user32.mouse_event(0x0008, 0, 0, 0, 0)  # Botón derecho presionado
 		ctypes.windll.user32.mouse_event(0x0010, 0, 0, 0, 0)  # Botón derecho liberado
 
-		winsound.Beep(600, 200)  # Beep para consola moderna
+		winsound.Beep(600, 200)  # Beep para consola terminal
 	finally:
-		pass #UIAHandler.terminate()
+		UIAHandler.terminate()
+
 
 # Función general para realizar clic derecho
 def realizar_clic_derecho():
@@ -767,9 +768,6 @@ class VerLog(wx.Frame):
 		Args:
 			evt (Event): Evento asociado.
 		"""
-		if self.frame.foreground_window:
-			api.setForegroundObject(self.frame.foreground_window)
-   
 		try:
 			os.remove(self.frame.fichero_temporal)
 		except FileNotFoundError:

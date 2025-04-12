@@ -63,7 +63,7 @@ En Windows, existen varias consolas o terminales que puedes utilizar para ejecut
 > **Nota**: Puedes acceder a estas consolas a través del menú inicio de Windows o mediante la búsqueda de Windows, escribiendo el nombre de la consola que deseas utilizar.
 
 ## Registro de cambios.
-###Versión 1.4.
+### Versión 1.4.
 
 **Novedades**:
 
@@ -79,7 +79,7 @@ Asignar las teclas en la correspondiente categoría en gestos de entrada.
    - Incluye opciones para abrir consolas en modo normal o con privilegios de administrador.
    - Permite seleccionar fácilmente la consola deseada con las teclas de flecha y abrirla con **`Intro`**.
 
-###Versión 1.3.
+### Versión 1.3.
 
 * Agregada compatibilidad con Windows Terminal.
 
@@ -91,7 +91,7 @@ Esta nueva función se agrega al visor de consolas cmd, powershell y bash usando
 
 Al pulsar dicha combinación detectara que clase de consola tenemos enfocada y actuara en consecuencia.
 
-###Versión 1.2.
+### Versión 1.2.
 
 * Solucionado error critico en Windows 10 de denegación de permisos (código 5).
 
@@ -99,12 +99,12 @@ Al pulsar dicha combinación detectara que clase de consola tenemos enfocada y a
 
 * Agregado detección de consola sin texto.
 
-###Versión 1.1.
+### Versión 1.1.
 
 * Corrección de errores en cadenas traducibles.
 
 * Agregado idioma inglés con traducción automática.
 
-###Versión 1.0.
+### Versión 1.0.
 
 * Versión inicial.
