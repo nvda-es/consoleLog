@@ -1,5 +1,5 @@
 # consoleLog - Manual de Usuario Completo
-**Versión:** 2026.01.03
+**Versión:** 2026.01.04
 **Autor y Desarrollador:** Héctor J. Benítez Corredera
 
 ---
@@ -51,7 +51,7 @@ El visor está optimizado para la velocidad y accesibilidad:
 - **Control + A**: Selecciona todo el contenido del visor.
 - **F1**: Anuncia la posición actual del cursor (línea y columna).
 - **F2**: Muestra esta ayuda de atajos de teclado.
-- **F5**: Actualiza el contenido del visor capturando de nuevo la consola original.
+- **F5**: Actualiza el contenido del visor capturando de nuevo la consola original (Nota: Esta función está en desarrollo para Windows Terminal y mostrará un aviso de "próximamente").
 - **Escape**: Cierra el visor de consola.
 
 <a name="gestión-de-archivos-y-búsqueda"></a>
@@ -63,13 +63,14 @@ El visor no es solo lectura. Puede guardar sesiones completas de depuración o l
 Esta función permite abrir rápidamente diferentes consolas en el directorio actual del Explorador de Windows o el Escritorio.
 1. Presione el comando del lanzador (debe asignarlo en Gestos de Entrada).
 2. Aparecerá una lista con las consolas instaladas en su sistema:
-   - **CMD** (Símbolo del sistema).
-   - **PowerShell** (v5.1).
-   - **PowerShell 7** (Core, si está instalado).
-   - **Windows Terminal**.
-   - **Git Bash**.
-   - **WSL (Linux)**.
-   - **Visual Studio developer** (32 y 64 bits).
+   - **CMD** (Símbolo del sistema de Windows).
+   - **PowerShell** (Instancia clásica v5.1).
+   - **PowerShell 7** (Versión Core, si está instalada).
+   - **Windows Terminal** (Soporta pestañas y perfiles modernos).
+   - **Git Bash** (Entorno Git para Windows).
+   - **WSL (Linux)** (Subsistema de Windows para Linux).
+   - **Visual Studio developer** (Símbolo del sistema para desarrolladores de 32 y 64 bits).
+   - **Msys2 / MinGW** (Entornos de desarrollo adicionales).
 3. Seleccione una y se abrirá instantáneamente en esa ubicación exacta.
 
 <a name="sistema-de-plugins"></a>
@@ -111,6 +112,7 @@ A través del menú **Archivo -> Opciones**, puede ajustar el comportamiento del
 - **El visor aparece vacío**: Asegúrese de que la consola tiene texto visible y tiene el foco antes de activar el comando.
 - **Google AI no responde**: Revise sus API Keys y la conexión a internet.
 - **Alt no abre el menú**: Si el foco se queda atrapado en el texto, intente presionar Escape una vez y luego Alt.
+- **F5 no funciona en Windows Terminal**: Debido a la arquitectura de aislamiento de Windows Terminal, el refresco en tiempo real está actualmente desactivado para esta consola. Se recomienda cerrar y volver a abrir el visor (NVDA+Control+V) para obtener el contenido actualizado.
 
 <a name="créditos"></a>
 ## 8. Créditos y Licencia

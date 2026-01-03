@@ -498,6 +498,11 @@ class VisorConsola(wx.Frame):
 
 	def _al_refrescar(self, evento):
 		"""Captura de nuevo el contenido de la consola original."""
+		if self._tipo_consola == 'terminal':
+			# TRANSLATORS: Mensaje cuando el refresco no está disponible para Windows Terminal
+			self._plugin._mensajes.anunciar(_("El refresco de contenido para Windows Terminal estará disponible próximamente."))
+			return
+			
 		self._barra_estado.SetStatusText(_("Actualizando contenido..."), 2)
 		winsound.Beep(800, 100)
 		
@@ -514,14 +519,23 @@ class VisorConsola(wx.Frame):
 			self._barra_estado.SetStatusText(_("No se recibió contenido nuevo"), 2)
 			return
 			
-		# Guardar posición actual para intentar restaurarla si es posible
+		# Determinar si el usuario estaba al final del texto antes de actualizar
+		al_final = (self._texto_ctrl.GetInsertionPoint() >= self._texto_ctrl.GetLastPosition() - 1)
+		
+		# Guardar posición actual (por si no estamos al final)
 		pos = self._texto_ctrl.GetInsertionPoint()
 		
+		# Actualizar contenido
 		self._texto_ctrl.SetValue(nuevo_texto)
 		
-		# Intentar restaurar posición (limitando al nuevo máximo)
-		max_pos = self._texto_ctrl.GetLastPosition()
-		self._texto_ctrl.SetInsertionPoint(min(pos, max_pos))
+		if al_final:
+			# Si estábamos al final, ir al nuevo final y hacer scroll
+			self._texto_ctrl.SetInsertionPointEnd()
+			self._texto_ctrl.ShowPosition(self._texto_ctrl.GetLastPosition())
+		else:
+			# Si estábamos en medio, intentar mantener la posición (limitada al nuevo máximo)
+			max_pos = self._texto_ctrl.GetLastPosition()
+			self._texto_ctrl.SetInsertionPoint(min(pos, max_pos))
 		
 		self._actualizar_barra_estado()
 		self._barra_estado.SetStatusText(_("Contenido actualizado"), 2)
@@ -533,4 +547,5 @@ class VisorConsola(wx.Frame):
 
 	def _al_cerrar(self, evento):
 		self._plugin.dialogo_visor_abierto = False
+		self._objeto_consola = None
 		self.Destroy()

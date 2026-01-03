@@ -121,6 +121,8 @@ class PluginClicDerecho(PluginBase):
 		Returns:
 			True si se realizó correctamente.
 		"""
+		elemento = None
+		
 		try:
 			UIAHandler.initialize()
 			
@@ -161,7 +163,5 @@ class PluginClicDerecho(PluginBase):
 			return False
 			
 		finally:
-			try:
-				UIAHandler.terminate()
-			except Exception:
-				pass
+			# Liberar objetos
+			elemento = None

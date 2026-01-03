@@ -75,86 +75,97 @@ class LectorWindowsTerminal:
 				senal_parar.set()
 	
 	def _leer_via_uia(self, objeto_ventana: Any) -> str:
-		"""Lee el contenido usando UI Automation.
+		"""Lee el contenido usando UI Automation con filtrado por visibilidad.
 		
-		Args:
-			objeto_ventana: Objeto NVDA de la ventana.
-		
-		Returns:
-			Texto del terminal.
-		
-		Raises:
-			Exception: Si hay error al leer.
+		Garantiza capturar la pestaña activa y evita repeticiones en NVDA.
 		"""
+		elemento_consola = None
+		patron = None
+		
+		# NUNCA llamar a initialize ni terminate aquí para no corromper el motor de NVDA
+		handler = getattr(UIAHandler, "handler", None)
+		if not handler or not handler.clientObject:
+			raise Exception(_("El sistema UI Automation de NVDA no está disponible."))
+		
+		client = handler.clientObject
+		
 		try:
-			# Inicializar UIA si es necesario
-			UIAHandler.initialize()
-			self._uia_inicializado = True
+			# 1. Prioridad: Intentar por foco (ideal para la primera vez)
+			try:
+				el = client.GetFocusedElement()
+				if el:
+					p = el.GetCurrentPattern(UIAHandler.UIA_TextPatternId)
+					if p:
+						patron = p
+						elemento_consola = el
+			except:
+				pass
 			
-			# Intentar obtener el elemento desde el foco primero, ya que suele ser el control de texto
-			elemento_consola = UIAHandler.handler.clientObject.GetFocusedElement()
-			patron = None
-			
-			if elemento_consola:
-				try:
-					patron = elemento_consola.GetCurrentPattern(UIAHandler.UIA_TextPatternId)
-				except Exception:
-					patron = None
-			
-			# Si el foco no funcionó o no tiene patrón, intentar desde el handle de la ventana
+			# 2. Estrategia para F5/Refresco: Buscar el control visible dentro del HWND
 			if not patron:
 				hwnd = getattr(objeto_ventana, 'windowHandle', 0)
 				if hwnd:
-					elemento_ventana = UIAHandler.handler.clientObject.ElementFromHandle(hwnd)
 					try:
-						# Intentar patrón directo en la ventana
-						patron = elemento_ventana.GetCurrentPattern(UIAHandler.UIA_TextPatternId)
-						elemento_consola = elemento_ventana
-					except Exception:
-						# Windows Terminal: Buscar el descendiente que soporte el patrón de texto
-						try:
-							# Intentar obtener constantes de forma segura (Scope: Descendants=4, Prop: IsTextPatternAvailable=30030)
-							scope = getattr(UIAHandler, 'TreeScope_Descendants', 4)
-							prop_id = getattr(UIAHandler, 'UIA_IsTextPatternAvailablePropertyId', 30030)
+						root = client.ElementFromHandle(hwnd)
+						# Buscar todos los descendientes que soporten texto
+						cond_texto = client.CreatePropertyCondition(UIAHandler.UIA_IsTextPatternAvailablePropertyId, True)
+						elementos = root.FindAll(UIAHandler.TreeScope_Descendants, cond_texto)
+						
+						if elementos and elementos.Length > 0:
+							mejor_el = None
 							
-							condicion = UIAHandler.handler.clientObject.CreatePropertyCondition(prop_id, True)
-							elemento_consola = elemento_ventana.FindFirst(scope, condicion)
-							if elemento_consola:
-								patron = elemento_consola.GetCurrentPattern(UIAHandler.UIA_TextPatternId)
-						except Exception as e_search:
-							log.debug(f"consoleLog: Error en búsqueda profunda de UIA: {e_search}")
+							for i in range(elementos.Length):
+								try:
+									el_temp = elementos.GetElement(i)
+									# FILTRO CLAVE: En Windows Terminal, las pestañas inactivas están "Offscreen"
+									# La pestaña activa es la única que tiene IsOffscreen como False.
+									if el_temp.CurrentIsOffscreen:
+										continue
+										
+									p_temp = el_temp.GetCurrentPattern(UIAHandler.UIA_TextPatternId)
+									if p_temp:
+										patron = p_temp
+										mejor_el = el_temp
+										break # Encontrado el control visible activo
+								except:
+									continue
+							
+							if mejor_el:
+								elemento_consola = mejor_el
+					except Exception as e_hwnd:
+						log.debug(f"consoleLog: Falló búsqueda por HWND: {e_hwnd}")
 			
 			if not patron:
-				raise Exception(_("El terminal no soporta el patrón de texto o no se pudo encontrar el control de lectura adecuado."))
+				# Si el filtro de visibilidad fue demasiado estricto (ventanas minimizadas), 
+				# intentar capturar el primer elemento con texto que encontremos
+				if hwnd:
+					try:
+						elemento_consola = root.FindFirst(UIAHandler.TreeScope_Descendants, cond_texto)
+						if elemento_consola:
+							patron = elemento_consola.GetCurrentPattern(UIAHandler.UIA_TextPatternId)
+					except: pass
+
+			if not patron:
+				raise Exception(_("No se pudo identificar el área de texto activa."))
 			
+			# Obtener texto actualizado del patrón
 			patron_texto = patron.QueryInterface(UIAHandler.IUIAutomationTextPattern)
-			
-			# Obtener rango de documento completo
-			rango_texto = patron_texto.DocumentRange
-			
-			# Obtener texto (-1 para obtener todo el texto)
-			texto_terminal = rango_texto.GetText(-1)
-			
-			# Limpiar el texto: eliminar líneas vacías excesivas
-			texto_limpio = self._limpiar_texto(texto_terminal)
-			
-			return texto_limpio
+			rango = patron_texto.DocumentRange
+			return self._limpiar_texto(rango.GetText(-1) or "")
 			
 		except Exception as e:
-			log.error(f"consoleLog: Error al leer Windows Terminal: {e}")
+			log.error(f"consoleLog: Error en lectura UIA: {e}")
 			raise Exception(_("Error al leer el terminal: {}").format(str(e)))
 			
 		finally:
-			# Terminar UIA
-			if self._uia_inicializado:
-				try:
-					UIAHandler.terminate()
-				except Exception:
-					pass
-				self._uia_inicializado = False
+			# Limpieza de referencias COM sin terminate
+			rango = None
+			patron_texto = None
+			patron = None
+			elemento_consola = None
 	
 	def _limpiar_texto(self, texto: str) -> str:
-		"""Limpia el texto extraído del terminal.
+		"""Limpia el texto extraído conservando la estructura interna.
 		
 		Args:
 			texto: Texto a limpiar.
@@ -165,12 +176,17 @@ class LectorWindowsTerminal:
 		if not texto:
 			return ""
 		
-		# Dividir en líneas y limpiar cada una
+		# Dividir en líneas
 		lineas = texto.splitlines()
 		
-		# Eliminar espacios al final de cada línea y filtrar líneas completamente vacías
-		lineas_limpias = [linea.rstrip() for linea in lineas if linea.strip()]
+		# Quitar espacios a la derecha pero mantener líneas vacías intermedias
+		# (Importante para que la estructura visual coincida con la consola real)
+		lineas_limpias = [linea.rstrip() for linea in lineas]
 		
+		# Eliminar solo las líneas vacías que queden al final del todo
+		while lineas_limpias and not lineas_limpias[-1].strip():
+			lineas_limpias.pop()
+			
 		return '\n'.join(lineas_limpias)
 	
 	def _emitir_beep_progreso(self, senal_parar: Optional[threading.Event]):
@@ -192,20 +208,29 @@ class LectorWindowsTerminal:
 		Returns:
 			Texto de la línea actual.
 		"""
+		elemento = None
+		patron = None
+		patron_texto = None
+		rangos = None
+		rango = None
+		
 		try:
 			UIAHandler.initialize()
 			
 			elemento = UIAHandler.handler.clientObject.GetFocusedElement()
+			if not elemento:
+				return ""
+				
 			patron = elemento.GetCurrentPattern(UIAHandler.UIA_TextPatternId)
 			patron_texto = patron.QueryInterface(UIAHandler.IUIAutomationTextPattern)
 			
 			# Obtener selección o caret
 			rangos = patron_texto.GetSelection()
 			
-			if rangos.Length > 0:
+			if rangos and rangos.Length > 0:
 				rango = rangos.GetElement(0)
 				rango.ExpandToEnclosingUnit(UIAHandler.UIA.TextUnit_Line)
-				return rango.GetText(-1).strip()
+				return (rango.GetText(-1) or "").strip()
 			
 			return ""
 			
@@ -214,10 +239,12 @@ class LectorWindowsTerminal:
 			return ""
 			
 		finally:
-			try:
-				UIAHandler.terminate()
-			except Exception:
-				pass
+			# Liberar objetos
+			rango = None
+			rangos = None
+			patron_texto = None
+			patron = None
+			elemento = None
 	
 	def obtener_informacion_terminal(self) -> dict:
 		"""Obtiene información sobre el terminal.
@@ -230,6 +257,9 @@ class LectorWindowsTerminal:
 			'clase': '',
 			'patron_texto_disponible': False
 		}
+		
+		elemento = None
+		patron = None
 		
 		try:
 			UIAHandler.initialize()
@@ -250,9 +280,8 @@ class LectorWindowsTerminal:
 			log.error(f"consoleLog: Error al obtener información del terminal: {e}")
 			
 		finally:
-			try:
-				UIAHandler.terminate()
-			except Exception:
-				pass
+			# Liberar objetos
+			patron = None
+			elemento = None
 		
 		return info
