@@ -1,5 +1,5 @@
 # consoleLog - Manual de Usuario Completo
-**Versión:** 2026..01.03
+**Versión:** 2026.01.03
 **Autor y Desarrollador:** Héctor J. Benítez Corredera
 
 ---
@@ -39,14 +39,20 @@ Cuando presiona el comando asignado estando sobre una ventana de consola, consol
 
 <a name="atajos-de-teclado"></a>
 ### Atajos de Teclado (Dentro del Visor)
-El visor está optimizado para la velocidad:
-- **Control + F**: Abre el diálogo de búsqueda.
+El visor está optimizado para la velocidad y accesibilidad:
+- **Alt**: Activa la barra de menús superior.
+- **Control + F**: Abre el diálogo de búsqueda de texto.
 - **F3**: Salta a la siguiente coincidencia de búsqueda.
 - **Shift + F3**: Salta a la coincidencia anterior.
-- **Control + G**: Diálogo para saltar a una línea específica.
+- **Control + G**: Diálogo para saltar rápidamente a una línea específica.
 - **Control + S**: Guarda todo el historial actual en un archivo `.txt`.
-- **F1**: Indica la posición del cursor (línea y columna).
-- **F2**: Muestra la ayuda de atajos de teclado.
+- **Control + P**: Abre directamente el diálogo de opciones/ajustes.
+- **Control + C**: Copia el texto seleccionado al portapapeles.
+- **Control + A**: Selecciona todo el contenido del visor.
+- **F1**: Anuncia la posición actual del cursor (línea y columna).
+- **F2**: Muestra esta ayuda de atajos de teclado.
+- **F5**: Actualiza el contenido del visor capturando de nuevo la consola original.
+- **Escape**: Cierra el visor de consola.
 
 <a name="gestión-de-archivos-y-búsqueda"></a>
 ### Gestión de Archivos y Búsqueda
@@ -72,22 +78,22 @@ consoleLog cuenta con una arquitectura modular que permite extender sus funciona
 ### Google AI (Gemini/Gemma)
 Permite mantener una conversación con la inteligencia artificial sobre lo que está ocurriendo en su consola.
 - **Configuración multi-clave**: Puede añadir varias claves API para evitar límites de uso.
-- **Archivos adjuntos**: Puede cargar archivos `.txt` externos.
-- **Detección de errores**: Analiza errores y sugiere soluciones.
-- **Instrucciones de Sistema**: Personaliza el comportamiento de la IA.
+- **Archivos adjuntos**: Puede cargar archivos `.txt` externos para que la IA los analice junto con la consola.
+- **Detección de errores**: Analiza errores de compilación y sugiere soluciones inteligentes.
+- **Instrucciones de Sistema**: Personaliza el comportamiento de la IA (ej. "Actúa como un experto en Python").
 
 <a name="herramientas-de-análisis-de-datos"></a>
 ### Herramientas de Análisis de Datos
-- **Extractor de Datos**: Busca direcciones IP, URLs y rutas de archivos en el texto.
-- **JSON Beauty**: Formatea bloques JSON para mejorar su legibilidad.
-- **Filtro de Log**: Aísla información relevante de registros extensos.
+- **Extractor de Datos**: Busca direcciones IP, URLs y rutas de archivos en el texto y permite copiarlas fácilmente.
+- **JSON Beauty**: Formatea bloques JSON para mejorar su legibilidad y navegación.
+- **Filtro de Log**: Aísla información relevante (como Errores o Warnings) de registros extensos.
 
 <a name="herramientas-de-utilidad"></a>
 ### Herramientas de Utilidad
-- **Calculadora Express**: Resuelve operaciones matemáticas.
-- **Convertidor de Tiempos**: Traduce marcas de tiempo (timestamps) a fechas legibles.
-- **Base64**: Decodifica cadenas en formato Base64.
-- **Copiado rápido**: Permite copiar el contenido de la consola enfocada de manera fácil.
+- **Calculadora Express**: Resuelve operaciones matemáticas que aparezcan en el texto.
+- **Convertidor de Tiempos**: Traduce marcas de tiempo (UNIX timestamps) a fechas legibles.
+- **Base64**: Decodifica cadenas en formato Base64 comúnmente encontradas en logs.
+- **Copiado rápido**: Permite copiar el contenido de la consola enfocada de manera directa sin abrir el visor.
 
 <a name="configuración-y-personalización"></a>
 ## 6. Configuración y Personalización
@@ -95,13 +101,14 @@ A través del menú **Archivo -> Opciones**, puede ajustar el comportamiento del
 - **Talla de Fuente**: Ajuste el tamaño para su comodidad visual.
 - **Fuente Monoespaciada**: Actívela para que las tablas y el código se alineen correctamente.
 - **Recordar Posición**: El visor puede recordar el tamaño y posición de la ventana.
-- **Gestión de Plugins**: Active o desactive plugins.
+- **Recordar selección en Lanzador**: Vuelve a seleccionar la última consola usada automáticamente.
+- **Gestión de Plugins**: Active o desactive plugins específicos para limpiar los menús.
 
 <a name="solución-de-problemas"></a>
 ## 7. Solución de Problemas
 - **El visor aparece vacío**: Asegúrese de que la consola tiene texto visible y tiene el foco antes de activar el comando.
 - **Google AI no responde**: Revise sus API Keys y la conexión a internet.
-- **Alt no abre el menú**: Si el foco se queda atrapado, intente presionar Escape y luego Alt.
+- **Alt no abre el menú**: Si el foco se queda atrapado en el texto, intente presionar Escape una vez y luego Alt.
 
 <a name="créditos"></a>
 ## 8. Créditos y Licencia
