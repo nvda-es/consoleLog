@@ -1,110 +1,114 @@
-# Manual del Complemento de Visor para Consolas de Windows
-## Introducción
+# consoleLog - Manual de Usuario Completo
+**Versión:** 2026..01.03
+**Autor y Desarrollador:** Héctor J. Benítez Corredera
 
-Este complemento facilita la visualización del contenido de las consolas de Windows a través de un diálogo interactivo. Es una herramienta válida para cualquier ventana de consola de Windows, permitiendo una navegación sencilla y opciones de búsqueda integradas.
+---
 
-## Configuración Inicial
-### Asignación de Teclas
+## Índice
+1. [Introducción](#introducción)
+2. [Instalación y Primeros Pasos](#instalación-y-primeros-pasos)
+3. [El Visor de Consola](#el-visor-de-consola)
+    - [Atajos de Teclado](#atajos-de-teclado)
+    - [Gestión de Archivos y Búsqueda](#gestión-de-archivos-y-búsqueda)
+4. [El Lanzador de Consolas](#el-lanzador-de-consolas)
+5. [Sistema de Plugins (Herramientas Inteligentes)](#sistema-de-plugins)
+    - [Google AI (Gemini/Gemma)](#google-ai)
+    - [Herramientas de Análisis de Datos](#herramientas-de-análisis-de-datos)
+    - [Herramientas de Utilidad](#herramientas-de-utilidad)
+6. [Configuración y Personalización](#configuración-y-personalización)
+7. [Solución de Problemas](#solución-de-problemas)
+8. [Créditos y Licencia](#créditos)
 
-Para utilizar este complemento, es necesario asignar una combinación de teclas que invocará el diálogo del visor de consola. Puedes hacer esto desde la siguiente ruta:
+---
 
-```
-NVDA > Preferencias > Gestos de Entrada > Visor de Consola > Muestra el Visor de Consola
-```
+<a name="introducción"></a>
+## 1. Introducción
+**consoleLog** (anteriormente conocido como VisorConsolasXD) es un complemento para el lector de pantalla NVDA diseñado para mostrar en un diálogo el contenido de las consolas de Windows. Permite a los usuarios interactuar con entornos de línea de comandos (como CMD, PowerShell, Terminal, Bash o Visual Studio developer) mediante una interfaz de texto enriquecido, accesible y altamente personalizable.
 
-### Restricciones
+<a name="instalación-y-primeros-pasos"></a>
+## 2. Instalación y Primeros Pasos
+Una vez instalado el complemento, la primera acción recomendada es asignar un comando de teclado para abrir el visor:
+1. Abra el menú de NVDA (Insert+N).
+2. Vaya a **Preferencias** -> **Gestos de entrada**.
+3. Busque la categoría **Visor de consola**.
+4. Asigne una tecla a **Muestra el visor de consola** (por ejemplo: `NVDA+Control+V`).
 
-* Solo se permite tener un diálogo abierto a la vez.
-* El diálogo solo puede ser invocado cuando una ventana de consola de Windows está enfocada.
+<a name="el-visor-de-consola"></a>
+## 3. El Visor de Consola
+Cuando presiona el comando asignado estando sobre una ventana de consola, consoleLog captura todo el texto actual y lo presenta en una ventana dedicada. Esta ventana ignora las limitaciones de lectura de la consola estándar y permite navegar línea a línea con total libertad.
 
-## Funcionalidades del Diálogo
+<a name="atajos-de-teclado"></a>
+### Atajos de Teclado (Dentro del Visor)
+El visor está optimizado para la velocidad:
+- **Control + F**: Abre el diálogo de búsqueda.
+- **F3**: Salta a la siguiente coincidencia de búsqueda.
+- **Shift + F3**: Salta a la coincidencia anterior.
+- **Control + G**: Diálogo para saltar a una línea específica.
+- **Control + S**: Guarda todo el historial actual en un archivo `.txt`.
+- **F1**: Indica la posición del cursor (línea y columna).
+- **F2**: Muestra la ayuda de atajos de teclado.
 
-### Navegación
+<a name="gestión-de-archivos-y-búsqueda"></a>
+### Gestión de Archivos y Búsqueda
+El visor no es solo lectura. Puede guardar sesiones completas de depuración o logs extensos para su análisis posterior. La búsqueda es de "ciclo completo", lo que significa que si llega al final del texto y no encuentra más resultados, volverá a empezar por el principio automáticamente.
 
-* Utiliza las teclas de cursor para navegar por el contenido.
-* Pulsa `F1` para obtener la línea y posición actuales del cursor.
+<a name="el-lanzador-de-consolas"></a>
+## 4. El Lanzador de Consolas
+Esta función permite abrir rápidamente diferentes consolas en el directorio actual del Explorador de Windows o el Escritorio.
+1. Presione el comando del lanzador (debe asignarlo en Gestos de Entrada).
+2. Aparecerá una lista con las consolas instaladas en su sistema:
+   - **CMD** (Símbolo del sistema).
+   - **PowerShell**.
+   - **Terminal**.
+   - **Bash**.
+   - **Visual Studio developer**.
+3. Seleccione una y se abrirá instantáneamente en esa ubicación exacta.
 
-### Búsqueda
+<a name="sistema-de-plugins"></a>
+## 5. Sistema de Plugins (Herramientas Inteligentes)
+consoleLog cuenta con una arquitectura modular que permite extender sus funcionalidades mediante plugins.
 
-* `Ctrl + F`: Abre un diálogo de búsqueda.
-* `F3`: Muestra un diálogo para buscar. Si ya se ha realizado una búsqueda anteriormente, buscará el siguiente resultado.
-* `Shift + F3`: Busca el resultado anterior en la búsqueda.
-* Las búsquedas no distinguen entre mayúsculas y minúsculas, y pueden realizarse con palabras exactas o fragmentos de palabras.
-* Cada búsqueda exitosa emitirá un sonido "beep" indicando que el cursor está ahora en la siguiente palabra encontrada.
+<a name="google-ai"></a>
+### Google AI (Gemini/Gemma)
+Permite mantener una conversación con la inteligencia artificial sobre lo que está ocurriendo en su consola.
+- **Configuración multi-clave**: Puede añadir varias claves API para evitar límites de uso.
+- **Archivos adjuntos**: Puede cargar archivos `.txt` externos.
+- **Detección de errores**: Analiza errores y sugiere soluciones.
+- **Instrucciones de Sistema**: Personaliza el comportamiento de la IA.
 
-### Menú Rápido
+<a name="herramientas-de-análisis-de-datos"></a>
+### Herramientas de Análisis de Datos
+- **Extractor de Datos**: Busca direcciones IP, URLs y rutas de archivos en el texto.
+- **JSON Beauty**: Formatea bloques JSON para mejorar su legibilidad.
+- **Filtro de Log**: Aísla información relevante de registros extensos.
 
-Acceso rápido al menú con `Alt + R`, donde encontrarás las siguientes opciones:
+<a name="herramientas-de-utilidad"></a>
+### Herramientas de Utilidad
+- **Calculadora Express**: Resuelve operaciones matemáticas.
+- **Convertidor de Tiempos**: Traduce marcas de tiempo (timestamps) a fechas legibles.
+- **Base64**: Decodifica cadenas en formato Base64.
+- **Copiado rápido**: Permite copiar el contenido de la consola enfocada de manera fácil.
 
-* Buscar
-* Guardar el contenido de la consola en un archivo
-* Salir de la consola
+<a name="configuración-y-personalización"></a>
+## 6. Configuración y Personalización
+A través del menú **Archivo -> Opciones**, puede ajustar el comportamiento del visor:
+- **Talla de Fuente**: Ajuste el tamaño para su comodidad visual.
+- **Fuente Monoespaciada**: Actívela para que las tablas y el código se alineen correctamente.
+- **Recordar Posición**: El visor puede recordar el tamaño y posición de la ventana.
+- **Gestión de Plugins**: Active o desactive plugins.
 
-### Salir del Diálogo
+<a name="solución-de-problemas"></a>
+## 7. Solución de Problemas
+- **El visor aparece vacío**: Asegúrese de que la consola tiene texto visible y tiene el foco antes de activar el comando.
+- **Google AI no responde**: Revise sus API Keys y la conexión a internet.
+- **Alt no abre el menú**: Si el foco se queda atrapado, intente presionar Escape y luego Alt.
 
-* `Alt + F4` o `Escape`: Cierra el diálogo.
+<a name="créditos"></a>
+## 8. Créditos y Licencia
+Este complemento es software libre bajo la licencia GPL v2.
+**Desarrollador Principal:** Héctor J. Benítez Corredera.
+**Contacto:** xebolax@gmail.com
+**Repositorio:** [GitHub consoleLog](https://github.com/nvda-es/consoleLog)
 
-## Actualización de Contenido
-
-Si abres un diálogo y luego la consola se actualiza, tendrás que cerrar el diálogo y volver a invocarlo para ver las actualizaciones.
-
-## Consolas Comunes de Windows
-
-En Windows, existen varias consolas o terminales que puedes utilizar para ejecutar comandos y scripts. Aquí te presentamos una lista de las consolas más comunes:
-
-1. **CMD** (Símbolo del sistema): Es una consola basada en texto para ejecutar comandos y batch scripts.
-   
-2. **PowerShell**: Es una consola avanzada que permite la automatización de tareas mediante scripts. Ofrece más características que el CMD tradicional.
-   
-3. **Windows Terminal**: Es una aplicación moderna que permite el acceso a múltiples consolas, como PowerShell, CMD y la consola de Linux (a través del Subsistema de Windows para Linux).
-   
-4. **Bash** (A través del Subsistema de Windows para Linux): Permite ejecutar un entorno de Linux dentro de Windows, permitiendo el uso de comandos y aplicaciones de Linux.
-
-> **Nota**: Puedes acceder a estas consolas a través del menú inicio de Windows o mediante la búsqueda de Windows, escribiendo el nombre de la consola que deseas utilizar.
-
-## Registro de cambios.
-### Versión 1.4.
-
-**Novedades**:
-
-Asignar las teclas en la correspondiente categoría en gestos de entrada.
-
-1. **Clic derecho en consolas**:
-   - Ahora puedes realizar un clic derecho en consolas clásicas o modernas para pegar automáticamente el contenido del portapapeles en la consola.
-   - Esta función es especialmente útil para transferir texto al entorno de la consola rápidamente sin necesidad de combinaciones adicionales.
-
-2. **Lanzador de Consolas**:
-   - Agregada una nueva funcionalidad que permite abrir diferentes consolas instaladas en el sistema desde cualquier directorio.
-   - Detecta automáticamente las consolas disponibles: CMD, PowerShell, Windows Terminal, git-bash y consolas de Visual Studio.
-   - Incluye opciones para abrir consolas en modo normal o con privilegios de administrador.
-   - Permite seleccionar fácilmente la consola deseada con las teclas de flecha y abrirla con **`Intro`**.
-
-### Versión 1.3.
-
-* Agregada compatibilidad con Windows Terminal.
-
-Esta función esta de prueba.
-
-De momento en las pruebas realizadas extrae correctamente el texto y lo muestra para poder ser visualizado cómodamente en un dialogo y poder trabajar con él.
-
-Esta nueva función se agrega al visor de consolas cmd, powershell y bash usando su misma combinación de teclas que tengamos agregado al complemento.
-
-Al pulsar dicha combinación detectara que clase de consola tenemos enfocada y actuara en consecuencia.
-
-### Versión 1.2.
-
-* Solucionado error critico en Windows 10 de denegación de permisos (código 5).
-
-* Agregado idioma turco y documentación (Umut KORKMAZ).
-
-* Agregado detección de consola sin texto.
-
-### Versión 1.1.
-
-* Corrección de errores en cadenas traducibles.
-
-* Agregado idioma inglés con traducción automática.
-
-### Versión 1.0.
-
-* Versión inicial.
+---
+*Gracias por usar consoleLog. Esperamos que esta herramienta mejore significativamente su productividad día a día.*

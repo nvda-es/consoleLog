@@ -1,26 +1,86 @@
-﻿@charset "utf-8";
-body { 
-font-family : Verdana, Arial, Helvetica, Sans-serif;
-line-height: 1.2em;
-} 
-h1, h2 {text-align: center}
-dt { 
-font-weight : bold; 
-float : left; 
-width: 10%;
-clear: left
-} 
-dd { 
-margin : 0 0 0.4em 0; 
-float : left;
-width: 90%;
-display: block;
-} 
-p { clear : both; 
-} 
-a { text-decoration : underline; 
-} 
-:active { 
-text-decoration : none; 
+/* Estilos para la documentación de VisorConsolasXD */
+
+body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+	line-height: 1.6;
+	max-width: 900px;
+	margin: 0 auto;
+	padding: 20px;
+	background-color: #f5f5f5;
+	color: #333;
 }
-a:focus, a:hover {outline: solid}
+
+h1 {
+	color: #2c3e50;
+	border-bottom: 2px solid #3498db;
+	padding-bottom: 10px;
+}
+
+h2 {
+	color: #34495e;
+	margin-top: 30px;
+	border-left: 4px solid #3498db;
+	padding-left: 10px;
+}
+
+h3 {
+	color: #7f8c8d;
+}
+
+ul, ol {
+	padding-left: 25px;
+}
+
+li {
+	margin-bottom: 5px;
+}
+
+table {
+	border-collapse: collapse;
+	width: 100%;
+	margin: 20px 0;
+	background: white;
+}
+
+th, td {
+	border: 1px solid #ddd;
+	padding: 12px;
+	text-align: left;
+}
+
+th {
+	background-color: #3498db;
+	color: white;
+}
+
+tr:nth-child(even) {
+	background-color: #f9f9f9;
+}
+
+code {
+	background-color: #ecf0f1;
+	padding: 2px 6px;
+	border-radius: 3px;
+	font-family: Consolas, monospace;
+}
+
+pre {
+	background-color: #2c3e50;
+	color: #ecf0f1;
+	padding: 15px;
+	border-radius: 5px;
+	overflow-x: auto;
+}
+
+a {
+	color: #3498db;
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+strong {
+	color: #2c3e50;
+}

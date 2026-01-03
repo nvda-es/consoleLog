@@ -29,7 +29,7 @@ addon_info = {
 
 Asignar teclas en Gestos de entrada / Visor de consola."""),
 	# version
-	"addon_version": "1.4",
+	"addon_version": "2026.01.03",
 	# Author(s)
 	"addon_author": u"Héctor J. Benítez Corredera <xebolax@gmail.com>",
 	# URL for the add-on documentation support
@@ -39,9 +39,9 @@ Asignar teclas en Gestos de entrada / Visor de consola."""),
 	# Documentation file name
 	"addon_docFileName": "readme.html",
 	# Minimum NVDA version supported (e.g. "2018.3.0", minor version is optional)
-	"addon_minimumNVDAVersion": "2022.1.0",
+	"addon_minimumNVDAVersion": "2025.1.0",
 	# Last NVDA version supported/tested (e.g. "2018.4.0", ideally more recent than minimum version)
-	"addon_lastTestedNVDAVersion": "2025.1.0",
+	"addon_lastTestedNVDAVersion": "2025.3.2",
 	# Add-on update channel (default is None, denoting stable releases,
 	# and for development releases, use "dev".)
 	# Do not change unless you know what you are doing!
@@ -57,10 +57,10 @@ Asignar teclas en Gestos de entrada / Visor de consola."""),
 # or use glob expressions.
 # For example to include all files with a ".py" extension from the "globalPlugins" dir of your add-on
 # the list can be written as follows:
-# pythonSources = ["addon/globalPlugins/*.py"]
+# pythonSources = ["addon/globalPlugins/consoleLog/__init__.py"]
 # For more information on SCons Glob expressions please take a look at:
 # https://scons.org/doc/production/HTML/scons-user/apd.html
-pythonSources = ["addon/globalPlugins/consoleLog/__init__.py"]
+pythonSources = ["addon/globalPlugins/consoleLog/*.py", "addon/globalPlugins/consoleLog/*/*.py"]
 
 # Files that contain strings for translation. Usually your python sources
 i18nSources = pythonSources + ["buildVars.py"]
