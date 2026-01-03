@@ -158,9 +158,20 @@ class GestorPlugins:
 		plugins_habilitados = self._configuracion.plugins.plugins_habilitados
 		plugins_descubiertos = self._descubrir_plugins()
 		
+		cargados = 0
+		errores = []
+		
 		for nombre_plugin in plugins_descubiertos:
 			if nombre_plugin in plugins_habilitados:
-				self._cargar_plugin(nombre_plugin)
+				if self._cargar_plugin(nombre_plugin):
+					cargados += 1
+				else:
+					errores.append(nombre_plugin)
+		
+		if errores:
+			log.error(f"consoleLog: Complemento cargado con errores. {cargados} plugins cargados, {len(errores)} fallidos: {', '.join(errores)}")
+		else:
+			log.info(f"consoleLog: Complemento cargado exitosamente. {cargados} plugins cargados.")
 	
 	def _cargar_plugin(self, nombre: str) -> bool:
 		"""Carga un plugin específico.
@@ -199,7 +210,7 @@ class GestorPlugins:
 			if plugin.inicializar():
 				self._plugins[nombre] = plugin
 				plugin._inicializado = True
-				log.info(f"consoleLog: Plugin cargado exitosamente: {nombre}")
+				log.debug(f"consoleLog: Plugin cargado exitosamente: {nombre}")
 				return True
 			else:
 				log.warning(f"consoleLog: Error al inicializar plugin: {nombre}")
@@ -231,8 +242,10 @@ class GestorPlugins:
 	
 	def descargar_plugins(self):
 		"""Descarga todos los plugins cargados."""
+		total = len(self._plugins)
 		for nombre, plugin in list(self._plugins.items()):
 			self._descargar_plugin(nombre)
+		log.info(f"consoleLog: {total} plugins descargados correctamente.")
 	
 	def _descargar_plugin(self, nombre: str) -> bool:
 		"""Descarga un plugin específico.
@@ -248,7 +261,7 @@ class GestorPlugins:
 				plugin = self._plugins[nombre]
 				plugin.terminar()
 				del self._plugins[nombre]
-				log.info(f"consoleLog: Plugin descargado: {nombre}")
+				log.debug(f"consoleLog: Plugin descargado: {nombre}")
 				return True
 		except Exception as e:
 			log.error(f"consoleLog: Error al descargar plugin {nombre}: {e}")

@@ -167,6 +167,30 @@ class LanzadorDialogo(wx.Dialog):
 					como_admin=True,
 					script_vs=consola.ruta
 				))
+				
+			elif consola.identificador == 'pwsh':
+				self._opciones.append(OpcionConsola(
+					_("Abrir PowerShell 7 (Core) aquí"),
+					'pwsh',
+					como_admin=False
+				))
+				self._opciones.append(OpcionConsola(
+					_("Abrir PowerShell 7 (Core) como Administrador"),
+					'pwsh',
+					como_admin=True
+				))
+				
+			elif consola.identificador == 'wsl':
+				self._opciones.append(OpcionConsola(
+					_("Abrir WSL (Linux) aquí"),
+					'wsl',
+					como_admin=False
+				))
+				self._opciones.append(OpcionConsola(
+					_("Abrir WSL (Linux) como Administrador"),
+					'wsl',
+					como_admin=True
+				))
 	
 	def _crear_interfaz(self):
 		"""Crea los elementos de la interfaz."""

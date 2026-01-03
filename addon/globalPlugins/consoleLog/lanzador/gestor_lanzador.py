@@ -77,6 +77,12 @@ class GestorLanzador:
 		# Visual Studio
 		self._detectar_visual_studio()
 		
+		# PowerShell Core (v7+)
+		self._detectar_powershell_core()
+		
+		# WSL (Windows Subsystem for Linux)
+		self._detectar_wsl()
+		
 		log.debug(f"consoleLog: Consolas detectadas: {list(self._consolas_cache.keys())}")
 	
 	def _detectar_powershell(self):
@@ -104,6 +110,53 @@ class GestorLanzador:
 				identificador='powershell',
 				disponible=False
 			)
+		
+	def _detectar_powershell_core(self):
+		"""Detecta si PowerShell Core (v7+) está disponible."""
+		try:
+			# pwsh suele estar en el PATH
+			self._consolas_cache['pwsh'] = InfoConsola(
+				nombre=_("PowerShell 7 (Core)"),
+				identificador='pwsh',
+				disponible=False,
+				ruta='pwsh.exe',
+				descripcion=_("Versión moderna y multiplataforma de PowerShell")
+			)
+			
+			resultado = subprocess.Popen(
+				['pwsh.exe', '-Command', "echo $null"],
+				creationflags=subprocess.CREATE_NO_WINDOW,
+				stdout=subprocess.PIPE,
+				stderr=subprocess.PIPE
+			)
+			resultado.communicate(timeout=3)
+			if resultado.returncode == 0:
+				self._consolas_cache['pwsh'].disponible = True
+		except:
+			pass
+
+	def _detectar_wsl(self):
+		"""Detecta si WSL está instalado."""
+		try:
+			self._consolas_cache['wsl'] = InfoConsola(
+				nombre=_("WSL (Linux)"),
+				identificador='wsl',
+				disponible=False,
+				ruta='wsl.exe',
+				descripcion=_("Subsistema de Windows para Linux")
+			)
+			
+			resultado = subprocess.Popen(
+				['wsl.exe', '--status'],
+				creationflags=subprocess.CREATE_NO_WINDOW,
+				stdout=subprocess.PIPE,
+				stderr=subprocess.PIPE
+			)
+			resultado.communicate(timeout=3)
+			if resultado.returncode == 0:
+				self._consolas_cache['wsl'].disponible = True
+		except:
+			pass
 	
 	def _detectar_windows_terminal(self):
 		"""Detecta si Windows Terminal está disponible."""
@@ -438,6 +491,18 @@ class GestorLanzador:
 				'cmd.exe',
 				f'/k pushd "{dir_script}" && call "{script}" && pushd "{directorio}"'
 			)
+		
+		elif tipo == 'pwsh':
+			return (
+				'pwsh.exe',
+				f'-NoExit -Command "Set-Location -LiteralPath \\"{directorio}\\""'
+			)
+			
+		elif tipo == 'wsl':
+			# Convertir ruta de Windows a ruta de WSL (ej: C:\ -> /mnt/c/)
+			# Simplificado: wsl se encarga de iniciar en el CWD si se llama correctamente
+			# Pero por seguridad usamos --cd
+			return ('wsl.exe', f'--cd "{directorio}"')
 		
 		else:
 			raise ValueError(_("Tipo de consola no soportado: {}").format(tipo))

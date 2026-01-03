@@ -64,10 +64,12 @@ Esta función permite abrir rápidamente diferentes consolas en el directorio ac
 1. Presione el comando del lanzador (debe asignarlo en Gestos de Entrada).
 2. Aparecerá una lista con las consolas instaladas en su sistema:
    - **CMD** (Símbolo del sistema).
-   - **PowerShell**.
-   - **Terminal**.
-   - **Bash**.
-   - **Visual Studio developer**.
+   - **PowerShell** (v5.1).
+   - **PowerShell 7** (Core, si está instalado).
+   - **Windows Terminal**.
+   - **Git Bash**.
+   - **WSL (Linux)**.
+   - **Visual Studio developer** (32 y 64 bits).
 3. Seleccione una y se abrirá instantáneamente en esa ubicación exacta.
 
 <a name="sistema-de-plugins"></a>
