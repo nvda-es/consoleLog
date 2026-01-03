@@ -217,16 +217,18 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self._gestor_lectores.leer_consola(
 			tipo_consola=tipo_consola,
 			objeto_ventana=objeto,
-			callback_exito=self._mostrar_visor,
+			callback_exito=lambda texto: self._mostrar_visor(texto, objeto, tipo_consola),
 			callback_error=self._error_lectura,
 			callback_progreso=self._progreso_lectura
 		)
 	
-	def _mostrar_visor(self, texto: str):
+	def _mostrar_visor(self, texto: str, objeto, tipo_consola):
 		"""Callback para mostrar el visor cuando la lectura es exitosa.
 		
 		Args:
 			texto: Contenido de la consola.
+			objeto: Objeto de la ventana de consola.
+			tipo_consola: Tipo de consola.
 		"""
 		self._proceso_en_marcha = False
 		
@@ -235,16 +237,18 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			return
 		
 		# Mostrar visor
-		wx.CallAfter(self._abrir_visor, texto)
+		wx.CallAfter(self._abrir_visor, texto, objeto, tipo_consola)
 	
-	def _abrir_visor(self, texto: str):
+	def _abrir_visor(self, texto: str, objeto, tipo_consola):
 		"""Abre el diálogo del visor de consola.
 		
 		Args:
 			texto: Contenido a mostrar.
+			objeto: Objeto de la ventana de consola.
+			tipo_consola: Tipo de consola.
 		"""
 		import gui
-		visor = VisorConsola(gui.mainFrame, self, texto)
+		visor = VisorConsola(gui.mainFrame, self, texto, objeto, tipo_consola)
 		visor.Show()
 		visor.Maximize()
 		visor.Raise()

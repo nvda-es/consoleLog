@@ -112,13 +112,15 @@ class AjustesDialog(wx.Dialog):
 class VisorConsola(wx.Frame):
 	"""Visor de consola avanzado con estética premium y soporte nativo para menús."""
 	
-	def __init__(self, parent, plugin, contenido: str):
+	def __init__(self, parent, plugin, contenido: str, objeto_consola, tipo_consola):
 		# TRANSLATORS: Título de la ventana del visor
 		super(VisorConsola, self).__init__(parent, wx.ID_ANY, _("Visor de consola"))
 		
 		self._plugin = plugin
 		self._plugin.dialogo_visor_abierto = True
 		self._contenido = contenido
+		self._objeto_consola = objeto_consola
+		self._tipo_consola = tipo_consola
 		self._ultima_busqueda = ""
 		
 		# Estructura de la interfaz (sin paneles intermedios para no bloquear Alt)
@@ -193,6 +195,9 @@ class VisorConsola(wx.Frame):
 		self.Bind(wx.EVT_MENU, self._al_mostrar_posicion, item_posicion)
 		item_ir_linea = menu_ver.Append(wx.ID_ANY, _("&Ir a línea...\tCtrl+G"))
 		self.Bind(wx.EVT_MENU, self._al_ir_a_linea, item_ir_linea)
+		menu_ver.AppendSeparator()
+		item_refrescar = menu_ver.Append(wx.ID_REFRESH, _("&Actualizar contenido\tF5"))
+		self.Bind(wx.EVT_MENU, self._al_refrescar, item_refrescar)
 		barra_menu.Append(menu_ver, _("&Ver"))
 		
 		# Menú Plugins (Dinámico)
@@ -261,6 +266,9 @@ class VisorConsola(wx.Frame):
 			return
 		elif tecla == ord('P') and mods == wx.MOD_CONTROL:
 			self._al_abrir_opciones(None)
+			return
+		elif tecla == wx.WXK_F5:
+			self._al_refrescar(None)
 			return
 			
 		# CRÍTICO: Skip() permite que Alt llegue a la barra de menús
@@ -427,6 +435,7 @@ class VisorConsola(wx.Frame):
 			"Control+A: Seleccionar todo\n"
 			"F1: Posición del cursor\n"
 			"F2: Esta ayuda\n"
+			"F5: Actualizar contenido de la consola\n"
 			"Escape: Cerrar visor"
 		)
 		wx.MessageBox(msg, _("Atajos"), wx.OK | wx.ICON_INFORMATION, self)
@@ -486,6 +495,41 @@ class VisorConsola(wx.Frame):
 		fuente = wx.Font(config.tamanio_fuente, family, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, faceName=face)
 		self._texto_ctrl.SetFont(fuente)
 		self._texto_ctrl.Refresh()
+
+	def _al_refrescar(self, evento):
+		"""Captura de nuevo el contenido de la consola original."""
+		self._barra_estado.SetStatusText(_("Actualizando contenido..."), 2)
+		winsound.Beep(800, 100)
+		
+		self._plugin._gestor_lectores.leer_consola(
+			tipo_consola=self._tipo_consola,
+			objeto_ventana=self._objeto_consola,
+			callback_exito=self._finalizar_refresco,
+			callback_error=self._error_refresco
+		)
+
+	def _finalizar_refresco(self, nuevo_texto):
+		"""Actualiza el control de texto con el nuevo contenido."""
+		if not nuevo_texto:
+			self._barra_estado.SetStatusText(_("No se recibió contenido nuevo"), 2)
+			return
+			
+		# Guardar posición actual para intentar restaurarla si es posible
+		pos = self._texto_ctrl.GetInsertionPoint()
+		
+		self._texto_ctrl.SetValue(nuevo_texto)
+		
+		# Intentar restaurar posición (limitando al nuevo máximo)
+		max_pos = self._texto_ctrl.GetLastPosition()
+		self._texto_ctrl.SetInsertionPoint(min(pos, max_pos))
+		
+		self._actualizar_barra_estado()
+		self._barra_estado.SetStatusText(_("Contenido actualizado"), 2)
+		winsound.Beep(1200, 100)
+
+	def _error_refresco(self, error):
+		self._barra_estado.SetStatusText(_("Error al actualizar"), 2)
+		wx.MessageBox(_("No se pudo actualizar el contenido: {}").format(error), _("Error"), wx.OK | wx.ICON_ERROR, self)
 
 	def _al_cerrar(self, evento):
 		self._plugin.dialogo_visor_abierto = False
