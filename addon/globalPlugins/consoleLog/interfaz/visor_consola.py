@@ -46,6 +46,14 @@ class AjustesDialog(wx.Dialog):
 		self.chk_tam.SetValue(self.config.visor.recordar_tamano)
 		s_visual.Add(self.chk_tam, 0, wx.ALL, 10)
 		
+		self.chk_sonidos = wx.CheckBox(p_visual, label=_("Emitir sonidos en modo seguimiento automático"))
+		self.chk_sonidos.SetValue(self.config.visor.sonidos_seguimiento)
+		s_visual.Add(self.chk_sonidos, 0, wx.ALL, 10)
+		
+		self.chk_cat = wx.CheckBox(p_visual, label=_("Categorizar plugins en submenús"))
+		self.chk_cat.SetValue(self.config.visor.categorizar_plugins)
+		s_visual.Add(self.chk_cat, 0, wx.ALL, 10)
+		
 		p_visual.SetSizer(s_visual)
 		notebook.AddPage(p_visual, _("Visual"))
 		
@@ -100,7 +108,9 @@ class AjustesDialog(wx.Dialog):
 			"visual": {
 				"tamanio_fuente": self.spn_fuente.GetValue(),
 				"fuente_monoespaciada": self.chk_mono.GetValue(),
-				"recordar_tamano": self.chk_tam.GetValue()
+				"recordar_tamano": self.chk_tam.GetValue(),
+				"sonidos_seguimiento": self.chk_sonidos.GetValue(),
+				"categorizar_plugins": self.chk_cat.GetValue()
 			},
 			"lanzador": {
 				"recordar_ultima_opcion": self.chk_lanz_rec.GetValue(),
@@ -127,6 +137,10 @@ class VisorConsola(wx.Frame):
 		self._crear_interfaz()
 		self._crear_menu()
 		self._configurar_eventos()
+		
+		# Temporizador para modo seguimiento
+		self._timer_seguimiento = wx.Timer(self)
+		self.Bind(wx.EVT_TIMER, self._al_refrescar, self._timer_seguimiento)
 		
 		# Cargar contenido y foco inicial
 		self._texto_ctrl.SetValue(self._contenido)
@@ -198,6 +212,9 @@ class VisorConsola(wx.Frame):
 		menu_ver.AppendSeparator()
 		item_refrescar = menu_ver.Append(wx.ID_REFRESH, _("&Actualizar contenido\tF5"))
 		self.Bind(wx.EVT_MENU, self._al_refrescar, item_refrescar)
+		menu_ver.AppendSeparator()
+		self.item_seguimiento = menu_ver.AppendCheckItem(wx.ID_ANY, _("&Seguimiento automático\tCtrl+Shift+F"))
+		self.Bind(wx.EVT_MENU, self._al_conmutar_seguimiento, self.item_seguimiento)
 		barra_menu.Append(menu_ver, _("&Ver"))
 		
 		# Menú Plugins (Dinámico)
@@ -214,21 +231,46 @@ class VisorConsola(wx.Frame):
 		self.SetMenuBar(barra_menu)
 
 	def _crear_menu_plugins(self, menu: wx.Menu):
-		"""Carga los plugins en el menú."""
+		"""Carga los plugins en el menú, opcionalmente categorizados."""
 		try:
 			gestor = self._plugin._gestor_plugins
 			plugins_cargados = gestor.listar_plugins_cargados()
 			self._mapa_plugins = {}
 			
-			for nombre in plugins_cargados:
-				if nombre == 'clic_derecho': continue
-				plugin_inst = gestor.obtener_plugin(nombre)
-				if not plugin_inst: continue
-				meta = plugin_inst.obtener_metadatos()
-				if meta:
-					item = menu.Append(wx.ID_ANY, meta.nombre)
-					self._mapa_plugins[item.GetId()] = nombre
-					self.Bind(wx.EVT_MENU, self._al_ejecutar_plugin, item)
+			categorizar = self._plugin._configuracion.visor.categorizar_plugins
+			
+			if not categorizar:
+				# Modo lista plana (actual)
+				for nombre in sorted(plugins_cargados):
+					if nombre == 'clic_derecho': continue
+					plugin_inst = gestor.obtener_plugin(nombre)
+					if not plugin_inst: continue
+					meta = plugin_inst.obtener_metadatos()
+					if meta:
+						item = menu.Append(wx.ID_ANY, meta.nombre)
+						self._mapa_plugins[item.GetId()] = nombre
+						self.Bind(wx.EVT_MENU, self._al_ejecutar_plugin, item)
+			else:
+				# Modo categorizado
+				categorias = {}
+				for nombre in sorted(plugins_cargados):
+					if nombre == 'clic_derecho': continue
+					plugin_inst = gestor.obtener_plugin(nombre)
+					if not plugin_inst: continue
+					meta = plugin_inst.obtener_metadatos()
+					if meta:
+						cat = meta.categoria.capitalize() if meta.categoria else _("General")
+						if cat not in categorias:
+							categorias[cat] = []
+						categorias[cat].append((meta.nombre, nombre))
+				
+				for cat_nombre in sorted(categorias.keys()):
+					submenu = wx.Menu()
+					for p_nombre, p_cod in sorted(categorias[cat_nombre]):
+						item = submenu.Append(wx.ID_ANY, p_nombre)
+						self._mapa_plugins[item.GetId()] = p_cod
+						self.Bind(wx.EVT_MENU, self._al_ejecutar_plugin, item)
+					menu.AppendSubMenu(submenu, cat_nombre)
 			
 			if not self._mapa_plugins:
 				item_vacio = menu.Append(wx.ID_ANY, _("No hay plugins habilitados"))
@@ -269,6 +311,9 @@ class VisorConsola(wx.Frame):
 			return
 		elif tecla == wx.WXK_F5:
 			self._al_refrescar(None)
+			return
+		elif tecla == ord('F') and mods == (wx.MOD_CONTROL | wx.MOD_SHIFT):
+			self._al_conmutar_seguimiento(None)
 			return
 			
 		# CRÍTICO: Skip() permite que Alt llegue a la barra de menús
@@ -499,18 +544,24 @@ class VisorConsola(wx.Frame):
 	def _al_refrescar(self, evento):
 		"""Captura de nuevo el contenido de la consola original."""
 		if self._tipo_consola == 'terminal':
+			# Si es el timer, no anunciamos repetidamente
+			if isinstance(evento, wx.TimerEvent):
+				return
 			# TRANSLATORS: Mensaje cuando el refresco no está disponible para Windows Terminal
 			self._plugin._mensajes.anunciar(_("El refresco de contenido para Windows Terminal estará disponible próximamente."))
 			return
 			
+		# Solo sonidos si está habilitado en la config
+		if self._plugin._configuracion.visor.sonidos_seguimiento:
+			winsound.Beep(800, 100)
+			
 		self._barra_estado.SetStatusText(_("Actualizando contenido..."), 2)
-		winsound.Beep(800, 100)
 		
 		self._plugin._gestor_lectores.leer_consola(
 			tipo_consola=self._tipo_consola,
 			objeto_ventana=self._objeto_consola,
 			callback_exito=self._finalizar_refresco,
-			callback_error=self._error_refresco
+			callback_error=self._al_error_refresco
 		)
 
 	def _finalizar_refresco(self, nuevo_texto):
@@ -539,13 +590,37 @@ class VisorConsola(wx.Frame):
 		
 		self._actualizar_barra_estado()
 		self._barra_estado.SetStatusText(_("Contenido actualizado"), 2)
-		winsound.Beep(1200, 100)
+		
+		if self._plugin._configuracion.visor.sonidos_seguimiento:
+			winsound.Beep(1200, 100)
 
-	def _error_refresco(self, error):
+	def _al_error_refresco(self, error):
 		self._barra_estado.SetStatusText(_("Error al actualizar"), 2)
-		wx.MessageBox(_("No se pudo actualizar el contenido: {}").format(error), _("Error"), wx.OK | wx.ICON_ERROR, self)
+		# No mostramos mensaje de error si estamos en modo seguimiento para no molestar
+		if not self.item_seguimiento.IsChecked():
+			wx.MessageBox(_("No se pudo actualizar el contenido: {}").format(error), _("Error"), wx.OK | wx.ICON_ERROR, self)
+
+	def _al_conmutar_seguimiento(self, evento):
+		"""Activa o desactiva el refresco periódico."""
+		checked = self.item_seguimiento.IsChecked()
+		if evento is None: # Llamada desde teclado
+			checked = not checked
+			self.item_seguimiento.Check(checked)
+			
+		if checked:
+			self._timer_seguimiento.Start(2000) # Cada 2 segundos
+			self._barra_estado.SetStatusText(_("Seguimiento activado"), 2)
+			if self._plugin._configuracion.visor.sonidos_seguimiento:
+				winsound.Beep(1000, 50)
+		else:
+			self._timer_seguimiento.Stop()
+			self._barra_estado.SetStatusText(_("Seguimiento desactivado"), 2)
+			if self._plugin._configuracion.visor.sonidos_seguimiento:
+				winsound.Beep(500, 50)
 
 	def _al_cerrar(self, evento):
+		if self._timer_seguimiento.IsRunning():
+			self._timer_seguimiento.Stop()
 		self._plugin.dialogo_visor_abierto = False
 		self._objeto_consola = None
 		self.Destroy()

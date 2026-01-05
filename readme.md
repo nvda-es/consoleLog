@@ -1,5 +1,5 @@
 # consoleLog - Manual de Usuario Completo
-**Versión:** 2026.01.04
+**Versión:** 2026.01.05
 **Autor y Desarrollador:** Héctor J. Benítez Corredera
 
 ---
@@ -51,7 +51,9 @@ El visor está optimizado para la velocidad y accesibilidad:
 - **Control + A**: Selecciona todo el contenido del visor.
 - **F1**: Anuncia la posición actual del cursor (línea y columna).
 - **F2**: Muestra esta ayuda de atajos de teclado.
-- **F5**: Actualiza el contenido del visor capturando de nuevo la consola original (Nota: Esta función está en desarrollo para Windows Terminal y mostrará un aviso de "próximamente").
+- **F3 / Shift + F3**: Salta a la siguiente / anterior coincidencia de búsqueda.
+- **F5**: Actualiza el contenido del visor capturando de nuevo la consola original (Nota: Esta función mostrará un aviso de "próximamente" en Windows Terminal).
+- **Control + Shift + F**: Conmuta el **Modo de Seguimiento Automático**.
 - **Escape**: Cierra el visor de consola.
 
 <a name="gestión-de-archivos-y-búsqueda"></a>
@@ -93,6 +95,8 @@ Permite mantener una conversación con la inteligencia artificial sobre lo que e
 
 <a name="herramientas-de-utilidad"></a>
 ### Herramientas de Utilidad
+- **Monitor de Recursos**: Muestra el uso de disco, RAM y versión de NVDA en un panel rápido.
+- **Analizador de StackTrace**: Detecta errores de programación de Python y permite extraer las rutas de archivos involucrados para una depuración rápida.
 - **Calculadora Express**: Resuelve operaciones matemáticas que aparezcan en el texto.
 - **Convertidor de Tiempos**: Traduce marcas de tiempo (UNIX timestamps) a fechas legibles.
 - **Base64**: Decodifica cadenas en formato Base64 comúnmente encontradas en logs.
@@ -105,7 +109,9 @@ A través del menú **Archivo -> Opciones**, puede ajustar el comportamiento del
 - **Fuente Monoespaciada**: Actívela para que las tablas y el código se alineen correctamente.
 - **Recordar Posición**: El visor puede recordar el tamaño y posición de la ventana.
 - **Recordar selección en Lanzador**: Vuelve a seleccionar la última consola usada automáticamente.
-- **Gestión de Plugins**: Active o desactive plugins específicos para limpiar los menús.
+- **Categorizar Plugins**: Organiza el menú de plugins en submenús por categorías (IA, Desarrollo, Utilidades, etc.) para una navegación más limpia.
+- **Sonidos de Seguimiento**: Permite silenciar los pitidos de confirmación cuando el Modo Seguimiento está activo.
+- **Gestión de Plugins**: Active o desactive plugins específicos desde la pestaña dedicada.
 
 <a name="solución-de-problemas"></a>
 ## 7. Solución de Problemas

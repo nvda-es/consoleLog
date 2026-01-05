@@ -29,6 +29,8 @@ class ConfiguracionVisor:
 	maximizado: bool = True
 	fuente_monoespaciada: bool = True
 	tamanio_fuente: int = 10
+	sonidos_seguimiento: bool = True
+	categorizar_plugins: bool = True
 
 
 @dataclass
