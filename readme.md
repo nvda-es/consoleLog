@@ -1,5 +1,5 @@
 # consoleLog - Manual de Usuario Completo
-**Versión:** 2026.01.05
+**Versión:** 2026.01.06
 **Autor y Desarrollador:** Héctor J. Benítez Corredera
 
 ---
@@ -42,19 +42,16 @@ Cuando presiona el comando asignado estando sobre una ventana de consola, consol
 El visor está optimizado para la velocidad y accesibilidad:
 - **Alt**: Activa la barra de menús superior.
 - **Control + F**: Abre el diálogo de búsqueda de texto.
-- **F3**: Salta a la siguiente coincidencia de búsqueda.
-- **Shift + F3**: Salta a la coincidencia anterior.
+- **F3 / Shift + F3**: Salta a la siguiente / anterior coincidencia de búsqueda (Ciclo completo).
 - **Control + G**: Diálogo para saltar rápidamente a una línea específica.
 - **Control + S**: Guarda todo el historial actual en un archivo `.txt`.
 - **Control + P**: Abre directamente el diálogo de opciones/ajustes.
-- **Control + C**: Copia el texto seleccionado al portapapeles.
-- **Control + A**: Selecciona todo el contenido del visor.
+- **Control + Shift + F**: Conmuta el **Modo de Seguimiento Automático (Auto-Tail)**.
+- **Control + C / Control + A**: Copiar selección / Seleccionar todo el contenido.
 - **F1**: Anuncia la posición actual del cursor (línea y columna).
-- **F2**: Muestra esta ayuda de atajos de teclado.
-- **F3 / Shift + F3**: Salta a la siguiente / anterior coincidencia de búsqueda.
-- **F5**: Actualiza el contenido del visor capturando de nuevo la consola original (Nota: Esta función mostrará un aviso de "próximamente" en Windows Terminal).
-- **Control + Shift + F**: Conmuta el **Modo de Seguimiento Automático**.
-- **Escape**: Cierra el visor de consola.
+- **F2**: Ayuda de atajos de teclado (Accesible y navegable).
+- **F5**: Actualiza el contenido (Nota: Aviso informativo en Windows Terminal).
+- **Escape / Alt + F4**: Cierra el visor de consola.
 
 <a name="gestión-de-archivos-y-búsqueda"></a>
 ### Gestión de Archivos y Búsqueda
@@ -81,17 +78,21 @@ consoleLog cuenta con una arquitectura modular que permite extender sus funciona
 
 <a name="google-ai"></a>
 ### Google AI (Gemini/Gemma)
-Permite mantener una conversación con la inteligencia artificial sobre lo que está ocurriendo en su consola.
-- **Configuración multi-clave**: Puede añadir varias claves API para evitar límites de uso.
-- **Archivos adjuntos**: Puede cargar archivos `.txt` externos para que la IA los analice junto con la consola.
-- **Detección de errores**: Analiza errores de compilación y sugiere soluciones inteligentes.
-- **Instrucciones de Sistema**: Personaliza el comportamiento de la IA (ej. "Actúa como un experto en Python").
+Permite mantener una conversación inteligente sobre el contenido de su consola.
+- **Chat Interactivo**: Utilice **`j`** y **`k`** para moverse cíclicamente por el historial de mensajes (con audio-feedback).
+- **Auto-reparar error**: Botón que analiza el fallo actual y propone parches de código exactos.
+- **Generador de Informe**: Nuevo plugin que genera un reporte estructurado (Resumen, Errores, Soluciones) en Markdown.
+- **Configuración multi-clave**: Soporte para múltiples API Keys con rotación automática en caso de límites (429).
+- **Archivos adjuntos**: Cargue archivos `.txt` para dar más contexto a la IA.
+- **Instrucciones de Sistema**: Personalice la personalidad de su asistente.
 
 <a name="herramientas-de-análisis-de-datos"></a>
 ### Herramientas de Análisis de Datos
-- **Extractor de Datos**: Busca direcciones IP, URLs y rutas de archivos en el texto y permite copiarlas fácilmente.
-- **JSON Beauty**: Formatea bloques JSON para mejorar su legibilidad y navegación.
-- **Filtro de Log**: Aísla información relevante (como Errores o Warnings) de registros extensos.
+- **Extractor de Datos**: Localiza IPs, URLs y rutas de archivos.
+- **JSON Beauty**: Formatea bloques JSON desordenados.
+- **Decodificador JWT**: Busca y decodifica tokens de seguridad JWT en los logs.
+- **Formateador SQL**: Organiza consultas SQL complejas para facilitar su lectura.
+- **Filtro de Log**: Aísla líneas por niveles (Error, Info, etc.).
 
 <a name="herramientas-de-utilidad"></a>
 ### Herramientas de Utilidad
@@ -109,9 +110,11 @@ A través del menú **Archivo -> Opciones**, puede ajustar el comportamiento del
 - **Fuente Monoespaciada**: Actívela para que las tablas y el código se alineen correctamente.
 - **Recordar Posición**: El visor puede recordar el tamaño y posición de la ventana.
 - **Recordar selección en Lanzador**: Vuelve a seleccionar la última consola usada automáticamente.
-- **Categorizar Plugins**: Organiza el menú de plugins en submenús por categorías (IA, Desarrollo, Utilidades, etc.) para una navegación más limpia.
-- **Sonidos de Seguimiento**: Permite silenciar los pitidos de confirmación cuando el Modo Seguimiento está activo.
-- **Gestión de Plugins**: Active o desactive plugins específicos desde la pestaña dedicada.
+- **Sistema de Alertas y Marcadores**: Defina palabras clave (ej: ERROR) que disparen sonidos o anuncios de NVDA en tiempo real.
+- **Categorizar Plugins**: Organización inteligente por submenús (IA, Desarrollo, Utiles).
+- **Intervalo de Seguimiento**: Configure el tiempo de refresco del Modo Tail (1-60 seg).
+- **Sonidos Personalizados**: Elija silenciar las actualizaciones automáticas manteniendo los sonidos de activación.
+- **Gestión de Plugins**: Pestaña dedicada para habilitar/deshabilitar herramientas.
 
 <a name="solución-de-problemas"></a>
 ## 7. Solución de Problemas

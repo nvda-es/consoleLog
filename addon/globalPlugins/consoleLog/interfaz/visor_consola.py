@@ -46,10 +46,20 @@ class AjustesDialog(wx.Dialog):
 		self.chk_tam.SetValue(self.config.visor.recordar_tamano)
 		s_visual.Add(self.chk_tam, 0, wx.ALL, 10)
 		
-		self.chk_sonidos = wx.CheckBox(p_visual, label=_("Emitir sonidos en modo seguimiento automático"))
+		self.chk_sonidos = wx.CheckBox(p_visual, label=_("Emitir sonidos al activar/desactivar seguimiento"))
 		self.chk_sonidos.SetValue(self.config.visor.sonidos_seguimiento)
 		s_visual.Add(self.chk_sonidos, 0, wx.ALL, 10)
 		
+		self.chk_sonidos_act = wx.CheckBox(p_visual, label=_("Emitir sonidos cada vez que el contenido se actualice"))
+		self.chk_sonidos_act.SetValue(self.config.visor.sonidos_al_actualizar)
+		s_visual.Add(self.chk_sonidos_act, 0, wx.ALL, 10)
+		
+		i_sizer = wx.BoxSizer(wx.HORIZONTAL)
+		i_sizer.Add(wx.StaticText(p_visual, label=_("Seguimiento cada (segundos):")), 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
+		self.spn_intervalo = wx.SpinCtrl(p_visual, value=str(self.config.visor.intervalo_seguimiento), min=1, max=60)
+		i_sizer.Add(self.spn_intervalo, 1, wx.ALL | wx.EXPAND, 5)
+		s_visual.Add(i_sizer, 0, wx.EXPAND | wx.ALL, 5)
+
 		self.chk_cat = wx.CheckBox(p_visual, label=_("Categorizar plugins en submenús"))
 		self.chk_cat.SetValue(self.config.visor.categorizar_plugins)
 		s_visual.Add(self.chk_cat, 0, wx.ALL, 10)
@@ -87,6 +97,25 @@ class AjustesDialog(wx.Dialog):
 		s_plugins.Add(self.lst_plugins, 1, wx.EXPAND | wx.ALL, 5)
 		p_plugins.SetSizer(s_plugins)
 		notebook.AddPage(p_plugins, _("Plugins"))
+
+		# Panel Alertas
+		p_alertas = wx.Panel(notebook)
+		s_alertas = wx.BoxSizer(wx.VERTICAL)
+		
+		self.chk_alerta_en = wx.CheckBox(p_alertas, label=_("Habilitar sistema de alertas y marcadores"))
+		self.chk_alerta_en.SetValue(self.config.alertas.habilitar_alertas)
+		s_alertas.Add(self.chk_alerta_en, 0, wx.ALL, 10)
+		
+		s_alertas.Add(wx.StaticText(p_alertas, label=_("Patrones (uno por línea):")), 0, wx.LEFT | wx.TOP, 10)
+		self.txt_patrones = wx.TextCtrl(p_alertas, style=wx.TE_MULTILINE, size=(-1, 150))
+		# Convertir lista de dicts a string simple para edición básica
+		patrones_str = "\n".join([p["patron"] for p in self.config.alertas.patrones])
+		self.txt_patrones.SetValue(patrones_str)
+		s_alertas.Add(self.txt_patrones, 1, wx.EXPAND | wx.ALL, 10)
+		s_alertas.Add(wx.StaticText(p_alertas, label=_("Nota: Se avisará por voz y sonido al detectar estas palabras.")), 0, wx.LEFT | wx.BOTTOM, 10)
+		
+		p_alertas.SetSizer(s_alertas)
+		notebook.AddPage(p_alertas, _("Alertas"))
 		
 		sizer_principal.Add(notebook, 1, wx.EXPAND | wx.ALL, 5)
 		
@@ -110,14 +139,43 @@ class AjustesDialog(wx.Dialog):
 				"fuente_monoespaciada": self.chk_mono.GetValue(),
 				"recordar_tamano": self.chk_tam.GetValue(),
 				"sonidos_seguimiento": self.chk_sonidos.GetValue(),
-				"categorizar_plugins": self.chk_cat.GetValue()
+				"sonidos_al_actualizar": self.chk_sonidos_act.GetValue(),
+				"categorizar_plugins": self.chk_cat.GetValue(),
+				"intervalo_seguimiento": self.spn_intervalo.GetValue()
 			},
 			"lanzador": {
 				"recordar_ultima_opcion": self.chk_lanz_rec.GetValue(),
 				"mostrar_consolas_no_disponibles": self.chk_lanz_todas.GetValue()
 			},
-			"plugins": plugins_seleccionados
+			"plugins": plugins_seleccionados,
+			"alertas": {
+				"habilitar_alertas": self.chk_alerta_en.GetValue(),
+				"patrones": [{"patron": p.strip(), "voz": True, "sonido": True} for p in self.txt_patrones.GetValue().splitlines() if p.strip()]
+			}
 		}
+
+class AyudaAtajosDialog(wx.Dialog):
+	"""Diálogo de ayuda con control de texto navegable para mejor accesibilidad."""
+	def __init__(self, parent, titulo, mensaje):
+		super().__init__(parent, title=titulo, size=(500, 450))
+		sizer = wx.BoxSizer(wx.VERTICAL)
+		
+		# Control de texto de solo lectura con foco forzado
+		self.txt = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH | wx.TE_NOHIDESEL)
+		self.txt.SetValue(mensaje)
+		
+		sizer.Add(self.txt, 1, wx.EXPAND | wx.ALL, 10)
+		
+		# Botón Aceptar / Cerrar
+		btn_ok = wx.Button(self, wx.ID_OK, label=_("Aceptar"))
+		sizer.Add(btn_ok, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+		
+		self.SetSizer(sizer)
+		self.Centre()
+		
+		# Foco inicial en el texto
+		wx.CallAfter(self.txt.SetFocus)
+		self.txt.SetInsertionPoint(0)
 
 class VisorConsola(wx.Frame):
 	"""Visor de consola avanzado con estética premium y soporte nativo para menús."""
@@ -132,6 +190,8 @@ class VisorConsola(wx.Frame):
 		self._objeto_consola = objeto_consola
 		self._tipo_consola = tipo_consola
 		self._ultima_busqueda = ""
+		self._refrescando_automaticamente = False
+		self._ultima_linea_procesada = 0
 		
 		# Estructura de la interfaz (sin paneles intermedios para no bloquear Alt)
 		self._crear_interfaz()
@@ -469,21 +529,27 @@ class VisorConsola(wx.Frame):
 
 	def _al_mostrar_atajos(self, evento):
 		msg = _(
-			"Atajos de teclado:\n\n"
-			"Alt: Activar barra de menús\n"
-			"Control+F: Buscar texto\n"
-			"F3 / Shift+F3: Buscar siguiente / anterior\n"
-			"Control+G: Ir a línea\n"
-			"Control+P: Opciones del visor\n"
-			"Control+S: Guardar contenido\n"
-			"Control+C: Copiar selección\n"
-			"Control+A: Seleccionar todo\n"
-			"F1: Posición del cursor\n"
-			"F2: Esta ayuda\n"
-			"F5: Actualizar contenido de la consola\n"
-			"Escape: Cerrar visor"
+			"Atajos de teclado de VisorConsolasXD:\n\n"
+			"• Alt: Activar barra de menús\n"
+			"• Control+F: Buscar texto dentro del visor\n"
+			"• F3: Buscar siguiente coincidencia\n"
+			"• Shift+F3: Buscar coincidencia anterior\n"
+			"• Control+Shift+F: Activar/Desactivar Seguimiento Automático (Auto-Tail)\n"
+			"• Control+G: Ir a una línea específica\n"
+			"• Control+P: Abrir opciones y ajustes del complemento\n"
+			"• Control+S: Guardar el contenido actual como archivo .txt\n"
+			"• Control+C: Copiar el texto seleccionado\n"
+			"• Control+A: Seleccionar todo el texto\n"
+			"• F1: Anunciar posición actual del cursor (línea y columna)\n"
+			"• F2: Mostrar esta ayuda de atajos\n"
+			"• F5: Actualizar contenido capturando la consola de nuevo\n"
+			"• Escape: Cerrar el visor de consola\n\n"
+			"Nota: El modo seguimiento automático refresca el contenido cada 2 segundos y se desplaza al final "
+			"automáticamente si hay texto nuevo. Puede configurar los sonidos en el menú Archivo > Opciones."
 		)
-		wx.MessageBox(msg, _("Atajos"), wx.OK | wx.ICON_INFORMATION, self)
+		dlg = AyudaAtajosDialog(self, _("Ayuda de Atajos"), msg)
+		dlg.ShowModal()
+		dlg.Destroy()
 
 	def _al_abrir_opciones(self, evento):
 		config_gestor = self._plugin._configuracion
@@ -499,6 +565,10 @@ class VisorConsola(wx.Frame):
 			# Aplicar Lanzador
 			for clave, valor in valores["lanzador"].items():
 				config_gestor.establecer_valor("lanzador", clave, valor)
+				
+			# Aplicar Alertas
+			for clave, valor in valores["alertas"].items():
+				config_gestor.establecer_valor("alertas", clave, valor)
 				
 			# Aplicar Plugins (y recargar si es necesario)
 			actuales = gestor_plugins.listar_plugins_cargados()
@@ -543,16 +613,23 @@ class VisorConsola(wx.Frame):
 
 	def _al_refrescar(self, evento):
 		"""Captura de nuevo el contenido de la consola original."""
+		es_automatico = isinstance(evento, wx.TimerEvent)
+		self._refrescando_automaticamente = es_automatico
+		
 		if self._tipo_consola == 'terminal':
 			# Si es el timer, no anunciamos repetidamente
-			if isinstance(evento, wx.TimerEvent):
+			if es_automatico:
 				return
 			# TRANSLATORS: Mensaje cuando el refresco no está disponible para Windows Terminal
 			self._plugin._mensajes.anunciar(_("El refresco de contenido para Windows Terminal estará disponible próximamente."))
 			return
 			
-		# Solo sonidos si está habilitado en la config
-		if self._plugin._configuracion.visor.sonidos_seguimiento:
+		# Solo sonidos si está habilitado y NO es automático silencioso
+		debe_sonar = self._plugin._configuracion.visor.sonidos_seguimiento
+		if es_automatico and not self._plugin._configuracion.visor.sonidos_al_actualizar:
+			debe_sonar = False
+			
+		if debe_sonar:
 			winsound.Beep(800, 100)
 			
 		self._barra_estado.SetStatusText(_("Actualizando contenido..."), 2)
@@ -579,6 +656,9 @@ class VisorConsola(wx.Frame):
 		# Actualizar contenido
 		self._texto_ctrl.SetValue(nuevo_texto)
 		
+		# Analizar alertas en el nuevo contenido
+		self._procesar_alertas(nuevo_texto)
+		
 		if al_final:
 			# Si estábamos al final, ir al nuevo final y hacer scroll
 			self._texto_ctrl.SetInsertionPointEnd()
@@ -591,7 +671,12 @@ class VisorConsola(wx.Frame):
 		self._actualizar_barra_estado()
 		self._barra_estado.SetStatusText(_("Contenido actualizado"), 2)
 		
-		if self._plugin._configuracion.visor.sonidos_seguimiento:
+		# Solo sonido si no es automático silencioso
+		debe_sonar = self._plugin._configuracion.visor.sonidos_seguimiento
+		if self._refrescando_automaticamente and not self._plugin._configuracion.visor.sonidos_al_actualizar:
+			debe_sonar = False
+			
+		if debe_sonar:
 			winsound.Beep(1200, 100)
 
 	def _al_error_refresco(self, error):
@@ -599,6 +684,30 @@ class VisorConsola(wx.Frame):
 		# No mostramos mensaje de error si estamos en modo seguimiento para no molestar
 		if not self.item_seguimiento.IsChecked():
 			wx.MessageBox(_("No se pudo actualizar el contenido: {}").format(error), _("Error"), wx.OK | wx.ICON_ERROR, self)
+
+	def _procesar_alertas(self, texto):
+		"""Analiza el texto en busca de patrones de alerta configurados."""
+		config_alertas = self._plugin._configuracion.alertas
+		if not config_alertas.habilitar_alertas:
+			return
+			
+		lineas = texto.splitlines()
+		# Solo procesamos líneas nuevas si es posible, o las últimas para simplificar
+		# Para evitar spam, solo miramos las últimas 5 líneas en cada refresco
+		nuevas_lineas = lineas[-5:]
+		
+		for linea in nuevas_lineas:
+			for item in config_alertas.patrones:
+				patron = item.get("patron", "")
+				if not patron: continue
+				
+				if patron.lower() in linea.lower():
+					# Disparar alerta
+					if item.get("sonido"):
+						winsound.PlaySound("SystemExclamation", winsound.SND_ALIAS | winsound.SND_ASYNC)
+					if item.get("voz"):
+						ui.message(_("Alerta detected: {}").format(linea))
+					return # Una alerta por refresco para no saturar
 
 	def _al_conmutar_seguimiento(self, evento):
 		"""Activa o desactiva el refresco periódico."""
@@ -608,8 +717,9 @@ class VisorConsola(wx.Frame):
 			self.item_seguimiento.Check(checked)
 			
 		if checked:
-			self._timer_seguimiento.Start(2000) # Cada 2 segundos
-			self._barra_estado.SetStatusText(_("Seguimiento activado"), 2)
+			intervalo = self._plugin._configuracion.visor.intervalo_seguimiento
+			self._timer_seguimiento.Start(intervalo * 1000)
+			self._barra_estado.SetStatusText(_("Seguimiento activado ({}s)").format(intervalo), 2)
 			if self._plugin._configuracion.visor.sonidos_seguimiento:
 				winsound.Beep(1000, 50)
 		else:

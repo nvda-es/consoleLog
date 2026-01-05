@@ -14,6 +14,8 @@ import ssl
 import wx
 from typing import Any, List, Optional, Dict
 from logHandler import log
+import ui
+import winsound
 
 import addonHandler
 _ = addonHandler.initTranslation()
@@ -149,6 +151,8 @@ class AIDialog(wx.Frame):
 		self.texto_completo = texto_completo
 		self.seleccionado = seleccionado
 		self.historial_mensajes = []
+		self._mensajes_navegacion = []
+		self._index_navegacion = -1
 		self.archivos_adjuntos = [] # Lista de contenidos de archivos txt
 		self.mapa_modelos = {}
 		
@@ -185,12 +189,16 @@ class AIDialog(wx.Frame):
 		btn_adjuntar = wx.Button(panel, label=_("Adjuntar .txt..."))
 		btn_adjuntar.Bind(wx.EVT_BUTTON, self._al_adjuntar)
 		
+		btn_reparar = wx.Button(panel, label=_("Auto-reparar error"))
+		btn_reparar.Bind(wx.EVT_BUTTON, self._al_reparar)
+		
 		btn_limpiar = wx.Button(panel, label=_("Limpiar chat"))
 		btn_limpiar.Bind(wx.EVT_BUTTON, self._al_limpiar)
 		
 		sizer_opciones.Add(self.cb_seleccion, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
 		sizer_opciones.Add(self.cb_consola, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
 		sizer_opciones.Add(btn_adjuntar, 0, wx.ALL, 5)
+		sizer_opciones.Add(btn_reparar, 0, wx.ALL, 5)
 		sizer_opciones.AddStretchSpacer()
 		sizer_opciones.Add(btn_limpiar, 0, wx.ALL, 5)
 		sizer_principal.Add(sizer_opciones, 0, wx.EXPAND)
@@ -208,6 +216,9 @@ class AIDialog(wx.Frame):
 		sizer_principal.Add(sizer_entrada, 0, wx.EXPAND)
 		
 		panel.SetSizer(sizer_principal)
+		
+		# Eventos de teclado
+		panel.Bind(wx.EVT_CHAR_HOOK, self._al_tecla_global)
 		
 		# Aceletadores
 		accel = wx.AcceleratorTable([
@@ -231,8 +242,67 @@ class AIDialog(wx.Frame):
 		item_prompt = menu_config.Append(wx.ID_ANY, _("Editar Instrucciones de Sistema..."))
 		self.Bind(wx.EVT_MENU, self._al_editar_prompt, item_prompt)
 		
+		menu_config.AppendSeparator()
+		item_cerrar = menu_config.Append(wx.ID_CLOSE, _("Cerrar Chat\tAlt+F4"))
+		self.Bind(wx.EVT_MENU, self._al_cerrar, item_cerrar)
+		
 		self.barra_menu.Append(menu_config, _("&IA"))
+		
+		# Menú Ayuda
+		menu_ayuda = wx.Menu()
+		item_ayuda = menu_ayuda.Append(wx.ID_ANY, _("Atajos de teclado..."))
+		self.Bind(wx.EVT_MENU, self._al_atajos, item_ayuda)
+		self.barra_menu.Append(menu_ayuda, _("Ayuda"))
+		
 		self.SetMenuBar(self.barra_menu)
+
+	def _al_atajos(self, evt):
+		msg = _(
+			"Atajos de teclado del Chat IA:\n\n"
+			"• J: Siguiente mensaje en el historial (hacia abajo)\n"
+			"• K: Mensaje anterior en el historial (hacia arriba)\n"
+			"• Ctrl+Enter: Enviar mensaje\n"
+			"• Escape: Cerrar el chat\n"
+			"• Alt+F4: Cerrar el chat\n\n"
+			"Nota: Las teclas J y K funcionan cuando el cuadro de edición no tiene el foco."
+		)
+		wx.MessageBox(msg, _("Atajos de teclado"), wx.OK | wx.ICON_INFORMATION, self)
+
+	def _al_tecla_global(self, evt):
+		key = evt.GetKeyCode()
+		# Si estamos en el cuadro de edición, permitimos escribir normalmente
+		if self.FindFocus() == self.txt_entrada:
+			evt.Skip()
+			return
+			
+		if key == ord('J') or key == ord('j'):
+			self._navegar_historial(1)
+		elif key == ord('K') or key == ord('k'):
+			self._navegar_historial(-1)
+		else:
+			evt.Skip()
+
+	def _navegar_historial(self, direccion):
+		if not self._mensajes_navegacion:
+			return
+			
+		total = len(self._mensajes_navegacion)
+		viejo_index = self._index_navegacion
+		self._index_navegacion += direccion
+		
+		beep = False
+		if self._index_navegacion >= total:
+			self._index_navegacion = 0
+			beep = True
+		elif self._index_navegacion < 0:
+			self._index_navegacion = total - 1
+			beep = True
+			
+		if beep:
+			winsound.Beep(1000, 100)
+			
+		msg = self._mensajes_navegacion[self._index_navegacion]
+		ui.message(msg)
 
 	def _actualizar_modelos_menu(self):
 		keys = self._obtener_keys()
@@ -326,6 +396,8 @@ class AIDialog(wx.Frame):
 	def _al_limpiar(self, evt):
 		self.txt_historial.Clear()
 		self.historial_mensajes = []
+		self._mensajes_navegacion = []
+		self._index_navegacion = -1
 		self.archivos_adjuntos = []
 		self.lbl_adjuntos.SetLabel(_("Adjuntos: Ninguno"))
 
@@ -344,6 +416,26 @@ class AIDialog(wx.Frame):
 		# Eliminar posibles bloques de código triple backtick para que no rompa el estilo visual en el control simple
 		self.txt_historial.WriteText(f"{texto}\n\n")
 		self.txt_historial.ShowPosition(self.txt_historial.GetLastPosition())
+		
+		# Añadir a navegación
+		self._mensajes_navegacion.append(f"{autor}: {texto}")
+		# Si es el primer mensaje, o estábamos al final, resetear index (opcional)
+
+	def _al_reparar(self, evt):
+		"""Analiza errores actuales y propone parches o correcciones."""
+		contexto = self.seleccionado if self.seleccionado else self.texto_completo[-20000:]
+		if not contexto:
+			wx.MessageBox(_("No hay contexto para analizar."), _("Auto-reparar"))
+			return
+			
+		prompt = (
+			"He encontrado un error en el log de mi consola. "
+			"Por favor, analízalo y sugiéreme exactamente qué debo cambiar en mi código para solucionarlo. "
+			"Si es posible, dame el bloque de código corregido."
+		)
+		
+		self.txt_entrada.SetValue(prompt)
+		self._al_enviar(None)
 
 	def _al_enviar(self, evt):
 		prompt_usuario = self.txt_entrada.GetValue().strip()
@@ -355,6 +447,7 @@ class AIDialog(wx.Frame):
 			return
 		
 		self.txt_entrada.Clear()
+		self._index_navegacion = -1 # Resetear navegación al enviar
 		self._agregar_mensaje(_("Tú"), prompt_usuario)
 		
 		# Construir contexto

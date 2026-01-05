@@ -14,7 +14,7 @@ Gestiona todas las configuraciones del complemento incluyendo:
 
 import os
 import json
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 from dataclasses import dataclass, field, asdict
 from logHandler import log
 import globalVars
@@ -31,6 +31,8 @@ class ConfiguracionVisor:
 	tamanio_fuente: int = 10
 	sonidos_seguimiento: bool = True
 	categorizar_plugins: bool = True
+	intervalo_seguimiento: int = 2
+	sonidos_al_actualizar: bool = False
 
 
 @dataclass
@@ -55,7 +57,12 @@ class ConfiguracionPlugins:
 		'base64_decoder',
 		'calculadora_express',
 		'resumen_actividad',
-		'google_ai'
+		'google_ai',
+		'stacktrace_analyzer',
+		'monitor_recursos',
+		'ai_report_generator',
+		'jwt_decoder',
+		'sql_formatter'
 	])
 	auto_cargar_plugins: bool = True
 
@@ -70,12 +77,23 @@ class ConfiguracionGoogleAI:
 
 
 @dataclass
+class ConfiguracionAlertas:
+	"""Configuración de alertas y marcadores de texto."""
+	habilitar_alertas: bool = True
+	patrones: List[Dict[str, Any]] = field(default_factory=lambda: [
+		{"patron": "ERROR", "voz": True, "sonido": True},
+		{"patron": "CRITICAL", "voz": True, "sonido": True},
+		{"patron": "FATAL", "voz": True, "sonido": True}
+	])
+
+@dataclass
 class ConfiguracionGeneral:
 	"""Configuración general del complemento."""
 	visor: ConfiguracionVisor = field(default_factory=ConfiguracionVisor)
 	lanzador: ConfiguracionLanzador = field(default_factory=ConfiguracionLanzador)
 	plugins: ConfiguracionPlugins = field(default_factory=ConfiguracionPlugins)
 	google_ai: ConfiguracionGoogleAI = field(default_factory=ConfiguracionGoogleAI)
+	alertas: ConfiguracionAlertas = field(default_factory=ConfiguracionAlertas)
 
 
 class Configuracion:
@@ -142,6 +160,8 @@ class Configuracion:
 		
 		if 'google_ai' in datos:
 			actualizar_objeto(self._config.google_ai, datos['google_ai'])
+		if 'alertas' in datos:
+			actualizar_objeto(self._config.alertas, datos['alertas'])
 	
 	def guardar_configuracion(self):
 		"""Guarda la configuración actual en el archivo."""
@@ -150,7 +170,8 @@ class Configuracion:
 				'visor': asdict(self._config.visor),
 				'lanzador': asdict(self._config.lanzador),
 				'plugins': asdict(self._config.plugins),
-				'google_ai': asdict(self._config.google_ai)
+				'google_ai': asdict(self._config.google_ai),
+				'alertas': asdict(self._config.alertas)
 			}
 			
 			with open(self._ruta_config, 'w', encoding='utf-8') as archivo:
@@ -179,6 +200,11 @@ class Configuracion:
 	def google_ai(self) -> ConfiguracionGoogleAI:
 		"""Obtiene la configuración de Google AI."""
 		return self._config.google_ai
+	
+	@property
+	def alertas(self) -> ConfiguracionAlertas:
+		"""Obtiene la configuración de alertas."""
+		return self._config.alertas
 	
 	def obtener_valor(self, seccion: str, clave: str, valor_defecto: Any = None) -> Any:
 		"""Obtiene un valor específico de la configuración.

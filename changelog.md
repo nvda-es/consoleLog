@@ -1,6 +1,24 @@
 # Changelog - consoleLog
 
-## [2026.01.05]
+## [2026.01.06]
+### Funciones para Power Users y Desarrolladores
+* **Sistema de Alertas y Marcadores (Line Markers)**: Nueva pestaña en opciones para configurar palabras clave (ERROR, FATAL, etc.) que disparen alertas sonoras y de voz en tiempo real.
+* **Generador de Informe IA**: Nuevo plugin que utiliza Gemini para realizar un análisis profundo del log y generar un reporte con soluciones sugeridas.
+* **Interacción IA Mejorada**:
+    * **Navegación de Historial**: Use las teclas **`j`** y **`k`** para recorrer rápidamente los mensajes del chat (modo cíclico con feedback sonoro).
+    * **Auto-reparación Inteligente**: Nuevo botón para obtener parches de código automáticos basados en errores de consola.
+    * **Ayuda Integrada**: Diálogo de atajos de teclado accesible dentro del chat.
+    * **Cierre Rápido**: Opción de menú y atajo para cerrar el chat de forma sencilla.
+* **Plugins Especializados**:
+    * **Decodificador JWT**: Decodificación automática de tokens de seguridad.
+    * **Formateador SQL Lite**: Embellecedor de consultas SQL.
+* **Infraestructura y Estabilidad**:
+    * **IA Shared Client**: Refactorización del núcleo de IA para soportar múltiples plugins de forma eficiente.
+    * **Hotfix**: Corregido error de importación que impedía la carga de `jwt_decoder` y `sql_formatter`.
+    * **Hotfix**: Corregido `NameError: List` en el módulo de configuración.
+
+---
+
 ### Modo de Seguimiento y Nuevos Plugins
 * **Modo de Seguimiento Automático (Auto-Tail)**: Nueva funcionalidad que permite al visor actualizarse en tiempo real cada 2 segundos y desplazarse automáticamente al final si hay contenido nuevo. 
     * Activación mediante el menú **Ver** o el atajo **Control + Shift + F**.
@@ -18,7 +36,7 @@
 ### Correcciones y Estabilidad
 * **Solución de Fallos en Plugins**: Corrección definitiva del error `NoneType` que impedía la carga de plugins debido a conflictos en la inicialización de la función de traducción de NVDA.
 * **Documentación Actualizada**: El manual de usuario (`readme.md`) ahora incluye todos los nuevos atajos y descripciones de los últimos plugins.
-* **Actualización de Versión**: Incremento de versión oficial a **2026.01.05** en todos los metadatos.
+* **Actualización de Versión**: Incremento de versión oficial a **2026.01.06** en todos los metadatos.
 
 ---
 
